@@ -2,40 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../screens/home_bg.dart';
 import '../widgets/menu_grid.dart';
-import '../widgets/profile_icon.dart';
+import 'package:frontend_hamalatulquran/widgets/profile_icon.dart';
 
 class HomePage extends StatelessWidget {
   final bool isPengajar; // Tambah kondisi apakah Pengajar atau Wali Santri
+  
   const HomePage({super.key, required this.isPengajar}); //Terima Parameter
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const HomeBackground(),
-        const ProfileIcon(),
-        Scaffold(
-          backgroundColor: Colors.transparent,
-          body: SafeArea(
+    print("isPengajar di HomePage: $isPengajar"); // Debugging
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          const HomeBackground(),
+          const ProfileIcon(), // Pastikan ini tetap di atas biar bisa diklik
+          SafeArea(
             child: Padding(
-              padding:
-                  EdgeInsets.only(top: 200.h), // Geser semua elemen ke bawah
+              padding: EdgeInsets.only(top: 200.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  MenuGrid(isPengajar: isPengajar), // Hapus Flexible di sini
-                  SizedBox(height: 25.h), // Kurangi jarak antar widget
+                  MenuGrid(key: ValueKey(isPengajar), isPengajar: isPengajar),
+                  SizedBox(height: 25.h),
                   _buildSantriAktifCard(),
-                  SizedBox(height: 5.h), // Sesuaikan agar lebih rapat
-                  Flexible(
-                    child: _buildNewsList(),
-                  ),
+                  SizedBox(height: 5.h),
+                  Expanded(child: _buildNewsList()),
                 ],
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

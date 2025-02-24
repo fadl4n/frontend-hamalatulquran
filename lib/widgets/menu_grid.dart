@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:frontend_hamalatulquran/pages/layanan_page.dart';
+import 'package:frontend_hamalatulquran/pages/target_hafalan_page.dart';
 
-class MenuGrid extends StatefulWidget {
+class MenuGrid extends StatelessWidget {
   final bool isPengajar;
 
   const MenuGrid({super.key, required this.isPengajar});
 
   @override
-  _MenuGridState createState() => _MenuGridState();
-}
-
-class _MenuGridState extends State<MenuGrid> {
-  @override
   Widget build(BuildContext context) {
-    final menuItems =
-        widget.isPengajar ? pengajarMenuItems : waliSantriMenuItems;
+    print("isPengajar di MenuGrid: $isPengajar"); // Debugging
 
-    // Hitung item yang bisa masuk GridView dengan kelipatan 4
+    final menuItems = isPengajar ? pengajarMenuItems : waliSantriMenuItems;
+
+    print(
+        "Menu Items yang dipilih: ${menuItems.map((item) => item['label']).toList()}");
+
     int fullRowCount = (menuItems.length ~/ 4) * 4;
     List<Map<String, dynamic>> fullGridItems =
         menuItems.sublist(0, fullRowCount);
@@ -25,41 +25,61 @@ class _MenuGridState extends State<MenuGrid> {
     return Column(
       children: [
         GridView.builder(
-          padding:
-              EdgeInsets.symmetric(horizontal: 25.w), // Atur padding global
+          padding: EdgeInsets.symmetric(horizontal: 25.w),
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
-            mainAxisSpacing: 15.h, // Jarak vertikal antar item
-            crossAxisSpacing: 8.w, // Jarak horizontal antar item
-            mainAxisExtent: 110, // Atur tinggi setiap item
+            mainAxisSpacing: 15.h,
+            crossAxisSpacing: 8.w,
+            mainAxisExtent: 120,
             childAspectRatio: 1.5,
           ),
           itemCount: fullGridItems.length,
           itemBuilder: (context, index) {
-            return _buildMenuItem(
-              fullGridItems[index]["color"],
-              fullGridItems[index]["icon"],
-              fullGridItems[index]["label"],
+            return GestureDetector(
+              onTap: () {
+                if (fullGridItems[index]["label"] == "Lainnya...") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LayananPage()),
+                  );
+                } else if (fullGridItems[index]["label"] == "Target Hafalan") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => TargetHafalanPage()),
+                  );
+                }
+              },
+              child: _buildMenuItem(
+                fullGridItems[index]["color"],
+                fullGridItems[index]["icon"],
+                fullGridItems[index]["label"],
+              ),
             );
           },
         ),
         if (remainingItems.isNotEmpty)
           Padding(
-            padding:
-                EdgeInsets.only(top: 8.h), // Atur jarak dari GridView ke Wrap
+            padding: EdgeInsets.only(top: 8.h),
             child: Wrap(
-              spacing: 15.w, // Atur jarak horizontal antar item
-              runSpacing: 10.h, // Atur jarak vertikal antar baris item
+              spacing: 15.w,
+              runSpacing: 10.h,
               alignment: WrapAlignment.center,
-              children: remainingItems
-                  .map((item) => _buildMenuItem(
-                        item["color"],
-                        item["icon"],
-                        item["label"],
-                      ))
-                  .toList(),
+              children: remainingItems.map((item) {
+                return GestureDetector(
+                  onTap: () {
+                    if (item["label"] == "Lainnya...") {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LayananPage()),
+                      );
+                    }
+                  },
+                  child: _buildMenuItem(
+                      item["color"], item["icon"], item["label"]),
+                );
+              }).toList(),
             ),
           ),
       ],
@@ -146,17 +166,14 @@ class _MenuGridState extends State<MenuGrid> {
         ),
         SizedBox(height: 4.h),
         SizedBox(
-          width: 60.w, // Atur lebar supaya teks bisa wrap
+          width: 70.w,
           child: Text(
             label,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 10.sp,
-              fontWeight: FontWeight.w600,
-            ),
-            maxLines: 2, // Batasi maksimal dua baris
-            overflow: TextOverflow.visible, // Biar nggak kepotong
-            softWrap: true, // Pastikan teks bisa wrap ke baris berikutnya
+            style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w600),
+            maxLines: 2,
+            overflow: TextOverflow.visible,
+            softWrap: true,
           ),
         ),
       ],
