@@ -4,8 +4,13 @@ import 'package:frontend_hamalatulquran/screens/splash_screen.dart';
 import 'package:frontend_hamalatulquran/pages/login_page.dart';
 import 'package:frontend_hamalatulquran/pages/profile_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  String? savedUserId = prefs.getString("user_id");
+  print("📌 [DEBUG] User ID yang tersimpan di awal aplikasi: $savedUserId");
   runApp(
     ScreenUtilInit(
       designSize: const Size(375, 812),

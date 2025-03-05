@@ -6,7 +6,7 @@ class ProfileIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 25, // Sesuaikan tinggi dari atas
+      top: 60, // Sesuaikan tinggi dari atas
       right: 25, // Geser ke kanan
       child: GestureDetector(
         onTap: () {

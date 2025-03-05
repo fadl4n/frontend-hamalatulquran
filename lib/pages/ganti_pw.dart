@@ -28,7 +28,7 @@ class GantiPassword extends StatelessWidget {
             borderRadius: BorderRadius.circular(20.r),
             child: Center(
               child: Icon(Icons.arrow_back_ios_new_rounded,
- color: Colors.white, size: 20.w),
+                  color: Colors.white, size: 20.w),
             ),
           ),
         ),

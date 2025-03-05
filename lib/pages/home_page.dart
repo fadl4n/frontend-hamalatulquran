@@ -12,7 +12,9 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print("isPengajar di HomePage: $isPengajar"); // Debugging
+    debugPrint("Building MenuGrid dengan isPengajar: $isPengajar");
     return Scaffold(
+      key: ValueKey(isPengajar),
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
@@ -20,15 +22,15 @@ class HomePage extends StatelessWidget {
           const ProfileIcon(), // Pastikan ini tetap di atas biar bisa diklik
           SafeArea(
             child: Padding(
-              padding: EdgeInsets.only(top: 200.h),
+              padding: EdgeInsets.only(top: 180.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   MenuGrid(key: ValueKey(isPengajar), isPengajar: isPengajar),
-                  SizedBox(height: 25.h),
+                  SizedBox(height: 20.h),
                   _buildSantriAktifCard(),
-                  SizedBox(height: 5.h),
+                  SizedBox(height: 10.h),
                   Expanded(child: _buildNewsList()),
                 ],
               ),

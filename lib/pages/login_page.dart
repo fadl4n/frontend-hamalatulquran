@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:frontend_hamalatulquran/pages/home_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:frontend_hamalatulquran/pages/home_page.dart';
+import 'package:frontend_hamalatulquran/services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,11 +13,13 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _nipController = TextEditingController();
-  final _nisnController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _nipController = TextEditingController();
+  final TextEditingController _nisnController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   String _loginType = 'Pengajar';
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -23,6 +27,93 @@ class _LoginPageState extends State<LoginPage> {
     _nisnController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> handleLogin() async {
+    print("🚀 handleLogin() DIPANGGIL!");
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    String identifier =
+        _loginType == 'Pengajar' ? _nipController.text : _nisnController.text;
+    String password = _passwordController.text;
+
+    try {
+      var response = await ApiService().login(identifier, password);
+      print("Response dari API: $response"); // Debugging
+
+      // 🔥 Cek apakah response punya 'data' dan 'id'
+      if (!response.containsKey('data') ||
+          !response['data'].containsKey('id')) {
+        print("⚠️ Response tidak memiliki ID, cek kembali API!");
+        return;
+      }
+
+      if (response.containsKey('data')) {
+        print("Data dari API: ${response['data']}"); // Debugging
+
+        if (response['data'].containsKey('id')) {
+          print("ID dari API: ${response['data']['id']}"); // Debugging
+        } else {
+          print("ID tidak ditemukan di response API!"); // Debugging
+        }
+      } else {
+        print("Response tidak memiliki key 'data'!"); // Debugging
+      }
+
+      if (response.containsKey('token')) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', response['token']);
+
+        // Simpan user_id ke SharedPreferences
+        if (response.containsKey('data') &&
+            response['data'].containsKey('id')) {
+          String userId = response['data']['id'].toString();
+          await prefs.setString('user_id', userId);
+
+          print("✅ User ID berhasil disimpan: $userId"); // Debugging
+          print("🔄 Ambil ulang untuk verifikasi...");
+
+          // Verifikasi apakah benar-benar tersimpan
+          String? savedUserId = prefs.getString("user_id");
+          if (savedUserId != null) {
+            print("✅ User ID berhasil disimpan: $savedUserId");
+          } else {
+            print("❌ User ID gagal disimpan!");
+          }
+          print("📌 User ID yang tersimpan setelah verifikasi: $savedUserId");
+        } else {
+          print("❌ User ID tidak ditemukan di response API!");
+        }
+
+        // Cek apakah user_id benar-benar tersimpan
+        final savedUserId = prefs.getString("user_id");
+        print("User ID yang tersimpan: $savedUserId");
+
+        bool isPengajar = _loginType == 'Pengajar';
+
+        print("🔀 Navigasi ke HomePage (isPengajar: $isPengajar)");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(isPengajar: isPengajar),
+          ),
+        );
+      } else {
+        _showError(response['error'] ?? 'Login gagal, coba lagi.');
+      }
+    } catch (e) {
+      _showError('Terjadi kesalahan, periksa koneksi Anda.');
+    }
+
+    setState(() => _isLoading = false);
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    );
   }
 
   @override
@@ -38,7 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                 bottom: MediaQuery.of(context).viewInsets.bottom),
             child: Column(
               children: [
-                SizedBox(height: 80.h),
+                SizedBox(height: 50.h),
                 _logoSection(),
                 SizedBox(height: 50.h),
                 _formSection(),
@@ -56,7 +147,7 @@ class _LoginPageState extends State<LoginPage> {
       children: [
         Image.asset(
           'assets/logo.png',
-          height: 100.h,
+          height: 90.h,
         ),
         SizedBox(width: 10.w),
         Text(
@@ -74,7 +165,6 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _formSection() {
     return SizedBox(
-      // Ganti Expanded jadi SizedBox
       width: double.infinity,
       height: MediaQuery.of(context).size.height * 0.8,
       child: Container(
@@ -86,17 +176,16 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 40.h),
+          padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 30.h),
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisSize:
-                  MainAxisSize.min, // Biar ukuran minimal, tidak terlalu besar
+              mainAxisSize: MainAxisSize.min,
               children: [
                 _titleText(),
-                SizedBox(height: 15.h),
+                SizedBox(height: 30.h),
                 _buildLoginTypeSwitcher(),
-                SizedBox(height: 20.h),
+                SizedBox(height: 10.h),
                 _loginType == 'Pengajar'
                     ? _buildTextField(Icons.person, 'NIP',
                         controller: _nipController)
@@ -105,7 +194,6 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(height: 15.h),
                 _buildTextField(Icons.lock, 'Password',
                     controller: _passwordController, obscureText: true),
-                SizedBox(height: 5.h),
                 _forgotPasswordButton(),
                 SizedBox(height: 30.h),
                 _loginButton(),
@@ -123,7 +211,7 @@ class _LoginPageState extends State<LoginPage> {
         text: 'Log ',
         style: GoogleFonts.poppins(
           color: Colors.green,
-          fontSize: 16.sp,
+          fontSize: 20.sp,
           fontWeight: FontWeight.bold,
         ),
         children: [
@@ -131,7 +219,7 @@ class _LoginPageState extends State<LoginPage> {
             text: 'in',
             style: GoogleFonts.poppins(
               color: Colors.green,
-              fontSize: 16.sp,
+              fontSize: 20.sp,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -139,7 +227,7 @@ class _LoginPageState extends State<LoginPage> {
             text: ' to your account.',
             style: GoogleFonts.poppins(
               color: Colors.black,
-              fontSize: 16.sp,
+              fontSize: 20.sp,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -179,7 +267,7 @@ class _LoginPageState extends State<LoginPage> {
         Text(
           value,
           style: GoogleFonts.poppins(
-            fontSize: 12.sp,
+            fontSize: 16.sp,
             color: Colors.green.shade800,
             fontWeight: FontWeight.bold,
           ),
@@ -225,7 +313,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _forgotPasswordButton() {
     return Align(
-      alignment: Alignment.centerRight,
+      alignment: Alignment.topRight,
       child: TextButton(
         onPressed: () {},
         child: Text(
@@ -243,21 +331,11 @@ class _LoginPageState extends State<LoginPage> {
       width: 0.5.sw,
       height: 50.h,
       child: ElevatedButton(
-        onPressed: () {
-          if (_formKey.currentState!.validate()) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  print("Login sebagai: $_loginType"); // Tambahkan debugging
-                  print(
-                      "isPengajar dikirim ke HomePage: ${_loginType == 'Pengajar'}");
-                  return HomePage(isPengajar: _loginType == 'Pengajar');
-                },
-              ),
-            );
-          }
-        },
+        onPressed: _isLoading
+            ? null
+            : () async {
+                await handleLogin();
+              },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.green,
           shape: RoundedRectangleBorder(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend_hamalatulquran/pages/layanan_page.dart';
-import 'package:frontend_hamalatulquran/pages/target_hafalan_page.dart';
+import 'package:frontend_hamalatulquran/pages/target_hafalan/target_hafalan_page.dart';
 
 class MenuGrid extends StatelessWidget {
   final bool isPengajar;
@@ -15,7 +15,7 @@ class MenuGrid extends StatelessWidget {
     final menuItems = isPengajar ? pengajarMenuItems : waliSantriMenuItems;
 
     print(
-        "Menu Items yang dipilih: ${menuItems.map((item) => item['label']).toList()}");
+        "Data terbaru pengajarMenuItems: ${pengajarMenuItems.map((item) => item['label']).toList()}");
 
     int fullRowCount = (menuItems.length ~/ 4) * 4;
     List<Map<String, dynamic>> fullGridItems =
@@ -31,9 +31,8 @@ class MenuGrid extends StatelessWidget {
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
             mainAxisSpacing: 15.h,
-            crossAxisSpacing: 8.w,
-            mainAxisExtent: 120,
-            childAspectRatio: 1.5,
+            mainAxisExtent: 100,
+            childAspectRatio: 1.2,
           ),
           itemCount: fullGridItems.length,
           itemBuilder: (context, index) {
@@ -47,7 +46,8 @@ class MenuGrid extends StatelessWidget {
                 } else if (fullGridItems[index]["label"] == "Target Hafalan") {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => TargetHafalanPage()),
+                    MaterialPageRoute(
+                        builder: (context) => TargetHafalanPage()),
                   );
                 }
               },
@@ -88,37 +88,41 @@ class MenuGrid extends StatelessWidget {
 
   static final List<Map<String, dynamic>> pengajarMenuItems = [
     {
-      "color": Colors.orange,
+      "color": Colors.lightGreen.shade600,
       "icon": Icons.flag_outlined,
       "label": "Target Hafalan"
     },
     {
-      "color": Colors.deepOrange,
+      "color": Colors.blue.shade800,
       "icon": Icons.menu_book_outlined,
-      "label": "Hafalan Hari Ini"
+      "label": "Rekap Absensi"
     },
     {
-      "color": Colors.purple,
+      "color": Colors.yellow.shade600,
       "icon": Icons.list_alt_rounded,
       "label": "Management Hafalan"
     },
     {
-      "color": Colors.amber,
+      "color": Colors.purple.shade600,
       "icon": Icons.checklist_outlined,
       "label": "Evaluasi Muroja'ah"
     },
-    {"color": Colors.blue, "icon": Icons.people, "label": "Data Santri"},
+    {"color": Colors.lightGreen, "icon": Icons.people, "label": "Data Santri"},
     {
-      "color": Colors.indigo,
+      "color": Colors.cyan.shade800,
       "icon": Icons.person_rounded,
       "label": "Data Pengajar"
     },
     {
-      "color": Colors.teal,
-      "icon": Icons.fact_check_outlined,
-      "label": "Rekap Absensi"
+      "color": Colors.blue.shade800,
+      "icon": Icons.note_rounded,
+      "label": "Laporan"
     },
-    {"color": Colors.grey, "icon": Icons.more_horiz, "label": "Lainnya..."},
+    {
+      "color": Colors.green.shade800,
+      "icon": Icons.more_horiz,
+      "label": "Lainnya..."
+    },
   ];
 
   static final List<Map<String, dynamic>> waliSantriMenuItems = [
@@ -166,11 +170,11 @@ class MenuGrid extends StatelessWidget {
         ),
         SizedBox(height: 4.h),
         SizedBox(
-          width: 70.w,
+          width: 75.w,
           child: Text(
             label,
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w600),
+            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600),
             maxLines: 2,
             overflow: TextOverflow.visible,
             softWrap: true,

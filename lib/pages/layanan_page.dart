@@ -49,10 +49,14 @@ class LayananPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
-        title: const Text("Layanan", style: TextStyle(color: Colors.white)),
+        title: const Text(
+          "Layanan",
+          style: TextStyle(color: Colors.white),
+        ),
+        centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
- color: Colors.white),
+          icon:
+              const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -62,8 +66,9 @@ class LayananPage extends StatelessWidget {
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 3,
               crossAxisSpacing: 15.w, // Jarak horizontal antar item
-              mainAxisSpacing: 10.h, // Jarak vertikal antar item
-              childAspectRatio: 1.3, // Rasio item (bisa disesuaikan)
+              mainAxisSpacing: 15.h, // Jarak vertikal antar item
+              mainAxisExtent: 110,
+              childAspectRatio: 1.2, // Rasio item (bisa disesuaikan)
             ),
             itemCount: layananItems.length,
             itemBuilder: (context, index) {
@@ -89,7 +94,7 @@ class LayananPage extends StatelessWidget {
         ),
         SizedBox(height: 6.h),
         SizedBox(
-          width: 70.w, // Supaya teks bisa wrapping
+          width: 75.w, // Supaya teks bisa wrapping
           child: Text(
             label,
             textAlign: TextAlign.center,

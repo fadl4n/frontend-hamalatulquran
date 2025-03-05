@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:ui';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeBackground extends StatelessWidget {
   const HomeBackground({super.key});
@@ -20,17 +20,17 @@ class HomeBackground extends StatelessWidget {
 
         // Siluet Masjid (50% layar, di atas)
         Positioned(
-          top: 10, // Bagian atas tetap fix
+          top: 50.h, // Bagian atas tetap fix
           left: 0,
           right: 0,
           child: FractionallySizedBox(
             widthFactor:
-                1.4, // Atur lebarnya (1.0 = layar penuh, >1.0 lebih lebar)
+                1.0, // Atur lebarnya (1.0 = layar penuh, >1.0 lebih lebar)
             child: SizedBox(
-              height: MediaQuery.of(context).size.height *
+              height: screenHeight *
                   0.5, // Tinggi tetap 50% layar
               child: Opacity(
-                opacity: 0.3, // Transparansi gambar
+                opacity: 0.4, // Transparansi gambar
                 child: Image.asset(
                   'assets/masjid.png',
                   fit: BoxFit.cover,
@@ -60,31 +60,35 @@ class HomeBackground extends StatelessWidget {
           ),
         ),
 
-        Positioned(
-          top: 100, // Sesuaikan posisi
-          left: 20,
-          right: 20,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center, // Sejajar di tengah
-            children: [
-              // Logo
-              Image.asset(
-                'assets/logo.png', // Ganti dengan logo pesantren
-                height: 110,
-              ),
-              const SizedBox(width: 10), // Jarak antara logo & teks
-              // Nama Pesantren
-              Text(
-                "PONDOK PESANTREN\nHAMALATUL QUR'AN",
-                textAlign: TextAlign.center,
-                style: GoogleFonts.ptSerif(
-                  color: Colors.white,
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  decoration: TextDecoration.none,
+        SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 70.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // **Logo Pesantren**
+                Image.asset(
+                  'assets/logo.png',
+                  height: 90.h, // Dikurangi sedikit biar proporsional
                 ),
-              ),
-            ],
+                SizedBox(width: 12.w), // Jarak antara logo dan teks
+
+                // **Nama Pesantren**
+                Expanded(
+                  child: Text(
+                    "PONDOK PESANTREN\nHAMALATUL QUR'AN",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.ptSerif(
+                      color: Colors.white,
+                      fontSize: 22, // Dikecilkan sedikit biar lebih pas
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.none,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],

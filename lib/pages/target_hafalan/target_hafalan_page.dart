@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:frontend_hamalatulquran/pages/target_hafalan/target_hafalan_user.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class TargetHafalanPage extends StatefulWidget {
@@ -69,26 +70,43 @@ class _TargetHafalanPageState extends State<TargetHafalanPage> {
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: EdgeInsets.only(bottom: 8.h),
-                    child: Container(
-                      padding: EdgeInsets.all(12.w),
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade100,
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 20.r,
-                            backgroundImage: AssetImage('assets/profile.jpg'),
+                    child: InkWell(
+                      onTap: () {
+                        // TODO: Navigate to Santri Target Hafalan Page
+                        print('Tapped on ${santriList[index]}');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TargetHafalanUser(
+                              nisn: santriList[index],
+                            ),
                           ),
-                          SizedBox(width: 10.w),
-                          Text(santriList[index],
-                          style: GoogleFonts.poppins(
-                            color: Colors.black,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
-                          ),)
-                        ],
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(10.r),
+                      child: Container(
+                        padding: EdgeInsets.all(12.w),
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade100,
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 20.r,
+                              backgroundImage: AssetImage('assets/profile.jpg'),
+                            ),
+                            SizedBox(width: 10.w),
+                            Text(
+                              santriList[index],
+                              style: GoogleFonts.poppins(
+                                color: Colors.black,
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   );
