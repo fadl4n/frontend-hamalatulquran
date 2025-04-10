@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend_hamalatulquran/pages/layanan_page.dart';
 import 'package:frontend_hamalatulquran/pages/target_hafalan/target_hafalan_page.dart';
+import 'package:frontend_hamalatulquran/pages/data_santri/data_kelas_page.dart';
 
 class MenuGrid extends StatelessWidget {
   final bool isPengajar;
@@ -15,7 +16,7 @@ class MenuGrid extends StatelessWidget {
     final menuItems = isPengajar ? pengajarMenuItems : waliSantriMenuItems;
 
     print(
-        "Data terbaru pengajarMenuItems: ${pengajarMenuItems.map((item) => item['label']).toList()}");
+        "🔍 Menu yang dipilih berdasarkan isPengajar ($isPengajar): ${menuItems.map((item) => item['label']).toList()}");
 
     int fullRowCount = (menuItems.length ~/ 4) * 4;
     List<Map<String, dynamic>> fullGridItems =
@@ -48,6 +49,12 @@ class MenuGrid extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => TargetHafalanPage()),
+                  );
+                } else if (fullGridItems[index]["label"] == "Data Santri") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DataKelasPage()),
                   );
                 }
               },

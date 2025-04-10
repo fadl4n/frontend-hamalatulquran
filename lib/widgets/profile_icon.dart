@@ -1,21 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_hamalatulquran/services/api_service.dart';
 
-class ProfileIcon extends StatelessWidget {
+class ProfileIcon extends StatefulWidget {
   const ProfileIcon({super.key});
+
+  @override
+  State<ProfileIcon> createState() => _ProfileIconState();
+}
+
+class _ProfileIconState extends State<ProfileIcon> {
+  String imgP = "assets/ustadz.png"; // Default sementara
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileIcon();
+  }
+
+  Future<void> _loadProfileIcon() async {
+    String defaultProfileIcon = await ApiService.getProfileIcon();
+    if (mounted) {
+      setState(() {
+        imgP = defaultProfileIcon;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 60, // Sesuaikan tinggi dari atas
-      right: 25, // Geser ke kanan
+      top: 60,
+      right: 25,
       child: GestureDetector(
         onTap: () {
           Navigator.pushNamed(context, '/profile');
         },
-        child: const CircleAvatar(
+        child: CircleAvatar(
           radius: 25,
-          backgroundImage:
-              AssetImage('assets/profile.jpg'), // Ganti dengan path foto profil
+          backgroundColor: Colors.grey[200],
+          backgroundImage: AssetImage(imgP), // Langsung pakai default
         ),
       ),
     );

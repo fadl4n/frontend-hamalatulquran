@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:frontend_hamalatulquran/pages/target_hafalan/target_hafalan_user.dart';
+import 'package:frontend_hamalatulquran/pages/data_santri/detail_data_santri.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_hamalatulquran/models/santri_model.dart';
 import 'package:frontend_hamalatulquran/services/api_service.dart';
 // import 'package:cached_network_image/cached_network_image.dart';
 
-class TargetHafalanPage extends StatefulWidget {
-  const TargetHafalanPage({super.key});
+class DataSantriPage extends StatefulWidget {
+  final int id;
+  final String namaKelas;
+  const DataSantriPage({super.key, required this.id, required this.namaKelas});
 
   @override
-  State<TargetHafalanPage> createState() => _TargetHafalanPageState();
+  State<DataSantriPage> createState() => _DataSantriPageState();
 }
 
-class _TargetHafalanPageState extends State<TargetHafalanPage> {
+class _DataSantriPageState extends State<DataSantriPage> {
   late Future<List<Santri>> futureSantri;
 
   @override
   void initState() {
     super.initState();
-    futureSantri = ApiService().fetchSantri();
+    futureSantri = ApiService().fetchSantriByKelas(widget.id);
   }
 
   @override
@@ -29,7 +31,7 @@ class _TargetHafalanPageState extends State<TargetHafalanPage> {
         backgroundColor: Colors.green,
         toolbarHeight: 60.h,
         title: Text(
-          "Target Hafalan",
+          "Data Santri Kelas ${widget.namaKelas}",
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontSize: 18.sp,
@@ -82,7 +84,7 @@ class _TargetHafalanPageState extends State<TargetHafalanPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text("Terjadi kesalahan: ${snapshot.error}"),
-                          SizedBox(height: 10.h),
+                          SizedBox(height: 10),
                           ElevatedButton(
                             onPressed: () {
                               setState(() {
@@ -94,7 +96,7 @@ class _TargetHafalanPageState extends State<TargetHafalanPage> {
                         ],
                       ),
                     );
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  } else if (snapshot.hasData && snapshot.data!.isEmpty) {
                     return const Center(child: Text("Tidak ada data santri."));
                   }
 
@@ -129,7 +131,7 @@ class SantriTile extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => TargetHafalanUser(nisn: santri.nisn),
+              builder: (context) => DetailDataSantri(id: santri.id),
             ),
           );
         },

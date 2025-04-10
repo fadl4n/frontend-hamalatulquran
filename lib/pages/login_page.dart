@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend_hamalatulquran/pages/home_page.dart';
 import 'package:frontend_hamalatulquran/services/api_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -30,7 +29,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> handleLogin() async {
-    print("🚀 handleLogin() DIPANGGIL!");
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
@@ -40,71 +38,18 @@ class _LoginPageState extends State<LoginPage> {
     String password = _passwordController.text;
 
     try {
-      var response = await ApiService().login(identifier, password);
-      print("Response dari API: $response"); // Debugging
+      String role = await ApiService().loginAndSave(identifier, password);
+      bool IsPengajar = role == "pengajar"; // Cek Role dari API
 
-      // 🔥 Cek apakah response punya 'data' dan 'id'
-      if (!response.containsKey('data') ||
-          !response['data'].containsKey('id')) {
-        print("⚠️ Response tidak memiliki ID, cek kembali API!");
-        return;
-      }
-
-      if (response.containsKey('data')) {
-        print("Data dari API: ${response['data']}"); // Debugging
-
-        if (response['data'].containsKey('id')) {
-          print("ID dari API: ${response['data']['id']}"); // Debugging
-        } else {
-          print("ID tidak ditemukan di response API!"); // Debugging
-        }
-      } else {
-        print("Response tidak memiliki key 'data'!"); // Debugging
-      }
-
-      if (response.containsKey('token')) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('token', response['token']);
-
-        // Simpan user_id ke SharedPreferences
-        if (response.containsKey('data') &&
-            response['data'].containsKey('id')) {
-          String userId = response['data']['id'].toString();
-          await prefs.setString('user_id', userId);
-
-          print("✅ User ID berhasil disimpan: $userId"); // Debugging
-          print("🔄 Ambil ulang untuk verifikasi...");
-
-          // Verifikasi apakah benar-benar tersimpan
-          String? savedUserId = prefs.getString("user_id");
-          if (savedUserId != null) {
-            print("✅ User ID berhasil disimpan: $savedUserId");
-          } else {
-            print("❌ User ID gagal disimpan!");
-          }
-          print("📌 User ID yang tersimpan setelah verifikasi: $savedUserId");
-        } else {
-          print("❌ User ID tidak ditemukan di response API!");
-        }
-
-        // Cek apakah user_id benar-benar tersimpan
-        final savedUserId = prefs.getString("user_id");
-        print("User ID yang tersimpan: $savedUserId");
-
-        bool isPengajar = _loginType == 'Pengajar';
-
-        print("🔀 Navigasi ke HomePage (isPengajar: $isPengajar)");
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HomePage(isPengajar: isPengajar),
-          ),
-        );
-      } else {
-        _showError(response['error'] ?? 'Login gagal, coba lagi.');
-      }
+      print("🔀 Navigasi ke HomePage (isPengajar: $IsPengajar)");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePage(isPengajar: IsPengajar),
+        ),
+      );
     } catch (e) {
-      _showError('Terjadi kesalahan, periksa koneksi Anda.');
+      _showError(e.toString());
     }
 
     setState(() => _isLoading = false);

@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:frontend_hamalatulquran/pages/target_hafalan/target_hafalan_user.dart';
+import 'package:frontend_hamalatulquran/pages/data_santri/data_santri_page.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:frontend_hamalatulquran/models/santri_model.dart';
+import 'package:frontend_hamalatulquran/models/kelas_model.dart';
 import 'package:frontend_hamalatulquran/services/api_service.dart';
-// import 'package:cached_network_image/cached_network_image.dart';
 
-class TargetHafalanPage extends StatefulWidget {
-  const TargetHafalanPage({super.key});
+class DataKelasPage extends StatefulWidget {
+  const DataKelasPage({super.key});
 
   @override
-  State<TargetHafalanPage> createState() => _TargetHafalanPageState();
+  State<DataKelasPage> createState() => _DataKelasPageState();
 }
 
-class _TargetHafalanPageState extends State<TargetHafalanPage> {
-  late Future<List<Santri>> futureSantri;
+class _DataKelasPageState extends State<DataKelasPage> {
+  late Future<List<Kelas>> futureKelas;
 
   @override
   void initState() {
     super.initState();
-    futureSantri = ApiService().fetchSantri();
+    futureKelas = ApiService().fetchKelas();
   }
 
   @override
@@ -29,7 +28,7 @@ class _TargetHafalanPageState extends State<TargetHafalanPage> {
         backgroundColor: Colors.green,
         toolbarHeight: 60.h,
         title: Text(
-          "Target Hafalan",
+          "Data List Kelas",
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontSize: 18.sp,
@@ -50,29 +49,22 @@ class _TargetHafalanPageState extends State<TargetHafalanPage> {
         padding: EdgeInsets.all(16.w),
         child: Column(
           children: [
-            // Search Bar
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.green.shade100,
-                borderRadius: BorderRadius.circular(25.r),
-              ),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: "Search",
-                  prefixIcon: const Icon(Icons.search_rounded),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 10.h),
-                ),
+            SizedBox(height: 15.h),
+            Text(
+              'List Kelas',
+              style: GoogleFonts.poppins(
+                color: Colors.black,
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: 10.h),
             const Divider(),
             SizedBox(height: 10.h),
 
-            // List Santri
+            // List Kelas
             Expanded(
-              child: FutureBuilder<List<Santri>>(
-                future: futureSantri,
+              child: FutureBuilder<List<Kelas>>(
+                future: futureKelas,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -86,10 +78,10 @@ class _TargetHafalanPageState extends State<TargetHafalanPage> {
                           ElevatedButton(
                             onPressed: () {
                               setState(() {
-                                futureSantri = ApiService().fetchSantri();
+                                futureKelas = ApiService().fetchKelas();
                               });
                             },
-                            child: Text("Coba Lagi"),
+                            child: const Text("Coba Lagi"),
                           ),
                         ],
                       ),
@@ -98,11 +90,11 @@ class _TargetHafalanPageState extends State<TargetHafalanPage> {
                     return const Center(child: Text("Tidak ada data santri."));
                   }
 
-                  List<Santri> santriList = snapshot.data!;
+                  List<Kelas> kelasList = snapshot.data!;
                   return ListView.builder(
-                    itemCount: santriList.length,
+                    itemCount: kelasList.length,
                     itemBuilder: (context, index) {
-                      return SantriTile(santri: santriList[index]);
+                      return KelasTile(kelas: kelasList[index]);
                     },
                   );
                 },
@@ -115,10 +107,10 @@ class _TargetHafalanPageState extends State<TargetHafalanPage> {
   }
 }
 
-// 🔥 Custom Widget untuk ListTile Santri
-class SantriTile extends StatelessWidget {
-  final Santri santri;
-  const SantriTile({super.key, required this.santri});
+// 🔥 Custom Widget untuk ListTile Kelas
+class KelasTile extends StatelessWidget {
+  final Kelas kelas;
+  const KelasTile({super.key, required this.kelas});
 
   @override
   Widget build(BuildContext context) {
@@ -129,12 +121,16 @@ class SantriTile extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => TargetHafalanUser(nisn: santri.nisn),
+              builder: (context) => DataSantriPage(
+                id: kelas.id,
+                namaKelas: kelas.nama,
+              ),
             ),
           );
         },
         borderRadius: BorderRadius.circular(10.r),
         child: Container(
+          height: 60.h,
           padding: EdgeInsets.all(12.w),
           decoration: BoxDecoration(
             color: Colors.green.shade100,
@@ -142,50 +138,14 @@ class SantriTile extends StatelessWidget {
           ),
           child: Row(
             children: [
-              // Foto Santri
-              CircleAvatar(
-                radius: 20.r,
-                backgroundColor: Colors.grey.shade300,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20.r),
-                  child: (santri.fotoSantri != null &&
-                          santri.fotoSantri!.isNotEmpty &&
-                          santri.fotoSantri!.startsWith("http"))
-                      ? Image.network(
-                          santri.fotoSantri!, // 🔗 Load dari URL kalau valid
-                          width: 40.w,
-                          height: 40.w,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Image.asset(
-                              santri.jenisKelamin == "Laki-Laki"
-                                  ? "assets/ikhwan.png"
-                                  : "assets/akhwat.png",
-                              width: 40.w,
-                              height: 40.w,
-                              fit: BoxFit.cover,
-                            );
-                          },
-                        )
-                      : Image.asset(
-                          santri.jenisKelamin == "Laki-Laki"
-                              ? "assets/ikhwan.png"
-                              : "assets/akhwat.png",
-                          width: 40.w,
-                          height: 40.w,
-                          fit: BoxFit.cover,
-                        ),
-                ),
-              ),
-
-              SizedBox(width: 10.w),
-              // Nama dan NISN
+              // Nama Kelas
               Expanded(
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      santri.nama,
+                      kelas.nama,
                       style: GoogleFonts.poppins(
                         color: Colors.black,
                         fontSize: 14.sp,
