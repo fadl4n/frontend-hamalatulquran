@@ -48,8 +48,21 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green,
-        toolbarHeight: 60.h,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Colors.green, Colors.teal],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(15.r),
+            ),
+          ),
+        ),
         title: Text(
           "Profil",
           style: GoogleFonts.poppins(
@@ -90,7 +103,7 @@ class _ProfilePageState extends State<ProfilePage> {
               );
             }
 
-            final   profile = snapshot.data!;
+            final profile = snapshot.data!;
             final nama = profile['nama'] ?? 'Tidak ada Nama';
             final identifier =
                 profile['nip'] ?? profile['nisn'] ?? 'Tidak ada NIP/NISN';
@@ -127,48 +140,45 @@ class _ProfilePageState extends State<ProfilePage> {
                         Stack(
                           alignment: Alignment.center,
                           children: [
-                            Container(
-                              padding: EdgeInsets.all(4.r),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border:
-                                    Border.all(color: Colors.white, width: 2.w),
-                              ),
-                              child: CircleAvatar(
-                                radius: 50.r,
-                                backgroundColor: Colors.white,
-                                child: ClipOval(
-                                  child: CachedNetworkImage(
-                                    imageUrl: profilePict,
-                                    width: 100.r,
-                                    height: 100.r,
+                            CircleAvatar(
+                              radius: 55.r,
+                              backgroundColor: Colors.transparent,
+                              child: ClipOval(
+                                child: CachedNetworkImage(
+                                  imageUrl: profilePict,
+                                  width: 110.r,
+                                  height: 110.r,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) =>
+                                      const CircularProgressIndicator(),
+                                  errorWidget: (context, url, error) =>
+                                      Image.asset(
+                                    "assets/user.png",
                                     fit: BoxFit.cover,
-                                    placeholder: (context, url) =>
-                                        const CircularProgressIndicator(),
-                                    errorWidget: (context, url, error) =>
-                                        Image.asset(
-                                      "assets/user.png", // Gambar default
-                                      fit: BoxFit.cover,
-                                    ),
                                   ),
                                 ),
                               ),
                             ),
                             Positioned(
                               bottom: 0,
-                              right: 0,
+                              right: 10.w,
                               child: Container(
-                                padding: EdgeInsets.all(4.r),
+                                padding: EdgeInsets.all(6.r),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
-                                  color: Colors.blue,
-                                  border: Border.all(
-                                      color: Colors.white, width: 2.w),
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 4.r,
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ],
                                 ),
                                 child: Icon(
                                   Icons.edit,
                                   size: 16.w,
-                                  color: Colors.white,
+                                  color: Colors.green,
                                 ),
                               ),
                             ),

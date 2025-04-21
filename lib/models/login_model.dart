@@ -1,25 +1,35 @@
 class User {
   final int id;
   final String role;
-  final String token;
   final String fotoProfil;
-  final String jenisKelamin;
+  final int jenisKelamin;
+  final String token;
 
   User({
     required this.id,
     required this.role,
-    required this.token,
     required this.fotoProfil,
     required this.jenisKelamin,
+    required this.token,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
       role: json['role'],
-      token: json['token'],
       fotoProfil: json['foto_profil'] ?? "assets/user.png",
-      jenisKelamin: json['jenis_kelamin'] == 1 ? "Laki-Laki" : "Perempuan",
+      jenisKelamin: json['jenis_kelamin'],
+      token: json['token'],
     );
+  }
+
+  String get jenisKelaminStr {
+    if (jenisKelamin == 1) {
+      return "Laki-laki";
+    } else if (jenisKelamin == 2) {
+      return "Perempuan";
+    } else {
+      return "Belum diisi";
+    }
   }
 }

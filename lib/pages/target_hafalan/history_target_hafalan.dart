@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:timeline_tile/timeline_tile.dart';
@@ -117,7 +118,7 @@ class _HistoryTargetHafalanState extends State<HistoryTargetHafalan> {
                                   if (ayatAwal.isNotEmpty &&
                                       ayatAkhir.isNotEmpty) {
                                     setState(() {
-                                      historyHafalan.insert(0,{
+                                      historyHafalan.insert(0, {
                                         'ayat': '$ayatAwal - $ayatAkhir',
                                         'ustadz': 'Ustadzah Rizka',
                                         'tanggal': DateFormat('dd/MM/yyyy')
@@ -231,10 +232,23 @@ class _HistoryTargetHafalanState extends State<HistoryTargetHafalan> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green,
+      backgroundColor: Colors.green.shade800,
       appBar: AppBar(
-        backgroundColor: Colors.green,
-        toolbarHeight: 60.h,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Colors.green, Colors.teal],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(15.r),
+            ),
+          ),
+        ),
         title: Text(
           "Target Hafalan",
           style: GoogleFonts.poppins(
@@ -266,14 +280,7 @@ class _HistoryTargetHafalanState extends State<HistoryTargetHafalan> {
 
   Widget _headerSection() {
     return Container(
-      padding: EdgeInsets.all(20.w),
-      decoration: BoxDecoration(
-        color: Colors.green,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(30.r),
-          bottomRight: Radius.circular(30.r),
-        ),
-      ),
+      padding: EdgeInsets.symmetric(vertical: 50.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

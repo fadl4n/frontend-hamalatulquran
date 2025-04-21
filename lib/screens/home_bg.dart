@@ -27,8 +27,7 @@ class HomeBackground extends StatelessWidget {
             widthFactor:
                 1.0, // Atur lebarnya (1.0 = layar penuh, >1.0 lebih lebar)
             child: SizedBox(
-              height: screenHeight *
-                  0.5, // Tinggi tetap 50% layar
+              height: screenHeight * 0.5, // Tinggi tetap 50% layar
               child: Opacity(
                 opacity: 0.4, // Transparansi gambar
                 child: Image.asset(
@@ -62,29 +61,25 @@ class HomeBackground extends StatelessWidget {
 
         SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 70.h),
+            padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 75.h),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // **Logo Pesantren**
                 Image.asset(
                   'assets/logo.png',
-                  height: 90.h, // Dikurangi sedikit biar proporsional
+                  height: 80.h, // Dikurangi sedikit biar proporsional
                 ),
-                SizedBox(width: 12.w), // Jarak antara logo dan teks
-
                 // **Nama Pesantren**
-                Expanded(
-                  child: Text(
-                    "PONDOK PESANTREN\nHAMALATUL QUR'AN",
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.ptSerif(
-                      color: Colors.white,
-                      fontSize: 22, // Dikecilkan sedikit biar lebih pas
-                      fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.none,
-                    ),
+                Text(
+                  "PONDOK PESANTREN\nHAMALATUL QUR'AN",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.ptSerif(
+                    color: Colors.white,
+                    fontSize: 20, // Dikecilkan sedikit biar lebih pas
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.none,
                   ),
                 ),
               ],

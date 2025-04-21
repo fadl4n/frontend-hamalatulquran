@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:frontend_hamalatulquran/pages/data_santri/data_santri_page.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:frontend_hamalatulquran/pages/rekap_absensi/absensi_detail.dart';
 import 'package:frontend_hamalatulquran/models/kelas_model.dart';
 import 'package:frontend_hamalatulquran/services/api_service.dart';
 
-class DataKelasPage extends StatefulWidget {
-  const DataKelasPage({super.key});
+class RekapAbsensi extends StatefulWidget {
+  const RekapAbsensi({super.key});
 
   @override
-  State<DataKelasPage> createState() => _DataKelasPageState();
+  State<RekapAbsensi> createState() => _RekapAbsensiState();
 }
 
-class _DataKelasPageState extends State<DataKelasPage> {
+class _RekapAbsensiState extends State<RekapAbsensi> {
   late Future<List<Kelas>> futureKelas;
 
   @override
@@ -74,8 +74,6 @@ class _DataKelasPageState extends State<DataKelasPage> {
             ),
             const Divider(),
             SizedBox(height: 10.h),
-
-            // List Kelas
             Expanded(
               child: FutureBuilder<List<Kelas>>(
                 future: futureKelas,
@@ -103,7 +101,6 @@ class _DataKelasPageState extends State<DataKelasPage> {
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return const Center(child: Text("Tidak ada data Kelas."));
                   }
-
                   List<Kelas> kelasList = snapshot.data!;
                   return ListView.builder(
                     itemCount: kelasList.length,
@@ -120,8 +117,6 @@ class _DataKelasPageState extends State<DataKelasPage> {
     );
   }
 }
-
-// 🔥 Custom Widget untuk ListTile Kelas
 class KelasTile extends StatelessWidget {
   final Kelas kelas;
   const KelasTile({super.key, required this.kelas});
@@ -135,7 +130,7 @@ class KelasTile extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DataSantriPage(
+              builder: (context) => AbsensiDetail(
                 id: kelas.id,
                 namaKelas: kelas.nama,
               ),

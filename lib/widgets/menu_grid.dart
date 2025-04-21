@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend_hamalatulquran/pages/layanan_page.dart';
+import 'package:frontend_hamalatulquran/pages/rekap_absensi/rekap_absensi.dart';
 import 'package:frontend_hamalatulquran/pages/target_hafalan/target_hafalan_page.dart';
 import 'package:frontend_hamalatulquran/pages/data_santri/data_kelas_page.dart';
+import 'package:frontend_hamalatulquran/pages/data_pengajar/data_pengajar_page.dart';
 
 class MenuGrid extends StatelessWidget {
   final bool isPengajar;
@@ -48,13 +50,25 @@ class MenuGrid extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => TargetHafalanPage()),
+                        builder: (context) => const TargetHafalanPage()),
                   );
                 } else if (fullGridItems[index]["label"] == "Data Santri") {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => DataKelasPage()),
+                        builder: (context) => const DataKelasPage()),
+                  );
+                } else if (fullGridItems[index]["label"] == "Data Pengajar") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const DataPengajarPage()),
+                  );
+                } else if (fullGridItems[index]["label"] == "Rekap Absensi") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const RekapAbsensi()),
                   );
                 }
               },

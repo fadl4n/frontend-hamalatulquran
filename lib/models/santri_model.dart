@@ -8,7 +8,7 @@ class Santri {
   final String? fotoSantri;
   final String angkatan;
   final int? idKelas;
-  final String? kelasNama;
+  final String? rawKelasNama;
   final String jenisKelamin;
   final String email;
   final String status;
@@ -23,7 +23,7 @@ class Santri {
     this.fotoSantri,
     required this.angkatan,
     required this.idKelas,
-    this.kelasNama,
+    this.rawKelasNama,
     required this.jenisKelamin,
     required this.email,
     required this.status,
@@ -45,24 +45,26 @@ class Santri {
     print("✅ Foto yang dipakai untuk ${json['nama']}: ${foto ?? defaultFoto}");
 
     return Santri(
-      id: json['id_santri'] ?? 0,
-      nama: json['nama'] ?? "Tidak Ada Nama",
-      tempatLahir: json['tempat_lahir'] ?? "Tidak Ada Nama",
-      tglLahir: json['tgl_lahir'] ?? "Tidak Ada Nama",
-      nisn: json['nisn'] ?? "Tidak Ada NISN",
-      alamat: json['alamat'] ?? "Tidak Ada Alamat",
+      id: json['id_santri'],
+      nama: json['nama'],
+      tempatLahir: json['tempat_lahir'],
+      tglLahir: json['tgl_lahir'],
+      nisn: json['nisn'],
+      alamat: json['alamat'],
       fotoSantri: foto, // ✅ Bisa null
-      angkatan: json['angkatan']?.toString() ?? "Tidak Ada Angkatan",
+      angkatan: json['angkatan'].toString(),
       idKelas: json['id_kelas'] as int?,
-      kelasNama: json['kelas']?['nama_kelas'],
+      rawKelasNama: json['kelas']?['nama_kelas'],
       jenisKelamin: isIkhwan ? "Laki-Laki" : "Perempuan",
-      email: json['email'] ?? "Tidak Ada Email",
-      status: json['status']?.toString() ?? "Tidak Ada Status",
+      email: json['email'],
+      status: json['status'].toString(),
     );
   }
 
+  String get kelasNama => rawKelasNama ?? "belum ada kelas";
+
   // ✅ Getter buat ambil foto dengan fallback ke default
-  String get fotoProfil {
+  String get fotoProfilSantri {
     return (fotoSantri != null && fotoSantri!.startsWith("http"))
         ? fotoSantri!
         : (jenisKelamin == "Laki-Laki"

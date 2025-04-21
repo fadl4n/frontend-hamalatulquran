@@ -1,29 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:frontend_hamalatulquran/pages/data_santri/detail_data_santri.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:frontend_hamalatulquran/models/santri_model.dart';
+import 'package:frontend_hamalatulquran/pages/data_pengajar/detail_data_pengajar.dart';
 import 'package:frontend_hamalatulquran/services/api_service.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:frontend_hamalatulquran/models/pengajar_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
 
-class DataSantriPage extends StatefulWidget {
-  final int id;
-  final String namaKelas;
-  const DataSantriPage({super.key, required this.id, required this.namaKelas});
+class DataPengajarPage extends StatefulWidget {
+  const DataPengajarPage({super.key});
 
   @override
-  State<DataSantriPage> createState() => _DataSantriPageState();
+  State<DataPengajarPage> createState() => _DataPengajarPageState();
 }
 
-class _DataSantriPageState extends State<DataSantriPage> {
-  late Future<List<Santri>> futureSantri;
+class _DataPengajarPageState extends State<DataPengajarPage> {
+  late Future<List<Pengajar>>? _futurePengajar;
 
   @override
   void initState() {
     super.initState();
-    futureSantri = ApiService().fetchSantriByKelas(widget.id);
+    _futurePengajar = ApiService().fetchPengajar();
   }
 
   @override
@@ -46,7 +44,7 @@ class _DataSantriPageState extends State<DataSantriPage> {
           ),
         ),
         title: Text(
-          "Data Santri Kelas ${widget.namaKelas}",
+          "Data Pengajar",
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontSize: 18.sp,
@@ -67,7 +65,6 @@ class _DataSantriPageState extends State<DataSantriPage> {
         padding: EdgeInsets.all(16.w),
         child: Column(
           children: [
-            // Search Bar
             Container(
               decoration: BoxDecoration(
                 color: Colors.green.shade100,
@@ -85,47 +82,52 @@ class _DataSantriPageState extends State<DataSantriPage> {
             SizedBox(height: 10.h),
             const Divider(),
             SizedBox(height: 10.h),
-
-            // List Santri
+            // List Penajar PonPes Hamalatul Qur'an
             Expanded(
-              child: FutureBuilder<List<Santri>>(
-                future: futureSantri,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    print("🛑 Error: ${snapshot.error}");
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text("Terjadi kesalahan: ${snapshot.error}"),
-                          SizedBox(height: 10.h),
-                          ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                futureSantri = ApiService().fetchSantri();
-                              });
-                            },
-                            child: const Text("Coba Lagi"),
-                          ),
-                        ],
-                      ),
-                    );
-                  } else if (snapshot.hasData && snapshot.data!.isEmpty) {
-                    return const Center(child: Text("Tidak ada data santri."));
-                  }
-
-                  List<Santri> santriList = snapshot.data!;
-                  return ListView.builder(
-                    itemCount: santriList.length,
-                    itemBuilder: (context, index) {
-                      return SantriTile(santri: santriList[index]);
-                    },
-                  );
-                },
-              ),
-            ),
+              child: _futurePengajar == null
+                  ? const Center(child: CircularProgressIndicator())
+                  : FutureBuilder<List<Pengajar>>(
+                      future: _futurePengajar,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          print("🛑 Error: ${snapshot.error}");
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text("Terjadi kesalahan: ${snapshot.error}"),
+                                const SizedBox(height: 10),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _futurePengajar =
+                                          ApiService().fetchPengajar();
+                                    });
+                                  },
+                                  child: const Text("Coba Lagi"),
+                                ),
+                              ],
+                            ),
+                          );
+                        } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+                          return const Center(
+                            child: Text("Tidak ada Data Pengajar"),
+                          );
+                        }
+                        List<Pengajar> pengajarList = snapshot.data!;
+                        return ListView.builder(
+                          itemCount: pengajarList.length,
+                          itemBuilder: (context, index) {
+                            return PengajarTile(pengajar: pengajarList[index]);
+                          },
+                        );
+                      },
+                    ),
+            )
           ],
         ),
       ),
@@ -133,10 +135,9 @@ class _DataSantriPageState extends State<DataSantriPage> {
   }
 }
 
-// 🔥 Custom Widget untuk ListTile Santri
-class SantriTile extends StatelessWidget {
-  final Santri santri;
-  const SantriTile({super.key, required this.santri});
+class PengajarTile extends StatelessWidget {
+  final Pengajar pengajar;
+  const PengajarTile({super.key, required this.pengajar});
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +148,7 @@ class SantriTile extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DetailDataSantri(id: santri.id),
+              builder: (context) => DetailDataPengajar(id: pengajar.id,),
             ),
           );
         },
@@ -167,7 +168,6 @@ class SantriTile extends StatelessWidget {
           ),
           child: Row(
             children: [
-              // Avatar with Border
               Container(
                 width: 50.w,
                 height: 50.w,
@@ -182,11 +182,11 @@ class SantriTile extends StatelessWidget {
                   backgroundColor: Colors.white,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(100.r),
-                    child: (santri.fotoSantri != null &&
-                            santri.fotoSantri!.isNotEmpty &&
-                            santri.fotoSantri!.startsWith("http"))
+                    child: (pengajar.fotoPengajar != null &&
+                            pengajar.fotoPengajar!.isNotEmpty &&
+                            pengajar.fotoPengajar!.startsWith("http"))
                         ? CachedNetworkImage(
-                            imageUrl: santri.fotoSantri!,
+                            imageUrl: pengajar.fotoPengajar!,
                             width: 46.w,
                             height: 46.w,
                             fit: BoxFit.cover,
@@ -203,14 +203,14 @@ class SantriTile extends StatelessWidget {
                               ),
                             ),
                             errorWidget: (context, url, error) => Image.asset(
-                              santri.jenisKelamin == "Laki-Laki"
+                              pengajar.jenisKelamin == "Laki-Laki"
                                   ? "assets/ikhwan.png"
                                   : "assets/akhwat.png",
                               fit: BoxFit.cover,
                             ),
                           )
                         : Image.asset(
-                            santri.jenisKelamin == "Laki-Laki"
+                            pengajar.jenisKelamin == "Laki-Laki"
                                 ? "assets/ikhwan.png"
                                 : "assets/akhwat.png",
                             width: 46.w,
@@ -221,21 +221,19 @@ class SantriTile extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 10.w),
-
-              // Nama & Info Santri
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      santri.nama,
+                      pengajar.nama,
                       style: GoogleFonts.poppins(
                         fontSize: 15.sp,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     Text(
-                      santri.nisn,
+                      pengajar.nip,
                       style: GoogleFonts.poppins(
                         fontSize: 12.sp,
                         color: Colors.grey.shade600,
@@ -244,7 +242,6 @@ class SantriTile extends StatelessWidget {
                   ],
                 ),
               ),
-
               Icon(Icons.arrow_forward_ios_rounded,
                   size: 16.w, color: Colors.grey.shade400),
             ],

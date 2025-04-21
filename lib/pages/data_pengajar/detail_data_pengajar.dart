@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:frontend_hamalatulquran/models/pengajar_model.dart';
 import 'package:frontend_hamalatulquran/widgets/data_detail_shimmer.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:frontend_hamalatulquran/models/santri_model.dart';
 import 'package:frontend_hamalatulquran/services/api_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-class DetailDataSantri extends StatefulWidget {
+class DetailDataPengajar extends StatefulWidget {
   final int id;
-  const DetailDataSantri({super.key, required this.id});
+  const DetailDataPengajar({super.key, required this.id});
 
   @override
-  State<DetailDataSantri> createState() => _DetailDataSantriState();
+  State<DetailDataPengajar> createState() => _DetailDataPengajarState();
 }
 
-class _DetailDataSantriState extends State<DetailDataSantri> {
-  late Future<Santri> _futureSantri;
+class _DetailDataPengajarState extends State<DetailDataPengajar> {
+  late Future<Pengajar> _futurePengajar;
 
   @override
   void initState() {
     super.initState();
-    _futureSantri = ApiService().fetchSantribyId(widget.id);
+    _futurePengajar = ApiService().fetchPengajarbyId(widget.id);
   }
 
   @override
@@ -44,7 +44,7 @@ class _DetailDataSantriState extends State<DetailDataSantri> {
           ),
         ),
         title: Text(
-          "Data Santri",
+          "Data Pengajar",
           style: GoogleFonts.poppins(
             color: Colors.white,
             fontSize: 18.sp,
@@ -64,33 +64,31 @@ class _DetailDataSantriState extends State<DetailDataSantri> {
           ),
         ),
       ),
-      body: FutureBuilder<Santri>(
-        future: _futureSantri,
+      body: FutureBuilder(
+        future: _futurePengajar,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const DataDetailShimmer();
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
-          final santri = snapshot.data!;
-          final nama = santri.nama;
-          final nisn = santri.nisn;
-          final santriPict = (santri.fotoSantri?.isNotEmpty ?? false)
-              ? santri.fotoSantri!
+          final pengajar = snapshot.data!;
+          final nama = pengajar.nama;
+          final nip = pengajar.nip;
+          final pengajarPict = (pengajar.fotoPengajar?.isNotEmpty ?? false)
+              ? pengajar.fotoPengajar!
               : "https://via.placeholder.com/150";
 
-          print("📸 profil pict Santri: ${santri.fotoSantri}");
+          print("📸 profil pict Santri: ${pengajar.fotoPengajar}");
 
           return SingleChildScrollView(
             padding: EdgeInsets.only(top: 30.h),
             child: Stack(
               clipBehavior: Clip.none,
               children: [
-                // Card
                 Container(
                   margin: EdgeInsets.only(top: 60.h),
-                  padding: EdgeInsets.only(
-                      top: 70.h, bottom: 30.h, left: 16.w, right: 16.w),
+                  padding: EdgeInsets.fromLTRB(16.w, 70.h, 16.w, 10.h),
                   decoration: BoxDecoration(
                     color: Colors.green.shade50,
                     borderRadius: BorderRadius.only(
@@ -102,50 +100,20 @@ class _DetailDataSantriState extends State<DetailDataSantri> {
                     constraints: BoxConstraints(
                         minHeight: MediaQuery.of(context).size.height),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         buildSectionTitle("Data Pribadi"),
                         buildDetailRow("Nama", nama),
-                        buildDetailRow("NISN", nisn),
-                        buildDetailRow("Tempat, tanggal lahir",
-                            "${santri.tempatLahir}, ${santri.tglLahir}"),
-                        buildDetailRow("Jenis Kelamin", santri.jenisKelamin),
-                        buildDetailRow("Email", santri.email),
-                        // buildDetailRow("Phone", santri.phone),
-                        buildDetailRow("Alamat", santri.alamat),
-                        buildDetailRow("Kelas", santri.kelasNama),
-
-                        SizedBox(height: 10.h),
-
-                        buildSectionTitle("Data Keluarga"),
-                        buildDetailRow("Nama Bapak Kandung", "-"), // sementara
-                        buildDetailRow("Tempat, tanggal lahir", "-"),
-                        buildDetailRow("Keadaan Bapak Kandung", "-"),
-                        buildDetailRow("Pendidikan", "-"),
-                        buildDetailRow("Pekerjaan", "-"),
-                        buildDetailRow("Alamat", "-"),
-                        buildDetailRow("Phone", "-"),
-
-                        SizedBox(height: 10.h),
-
-                        buildSectionTitle("Data Ibu Kandung"),
-                        buildDetailRow("Nama Ibu Kandung", "-"),
-                        buildDetailRow("Tempat, tanggal lahir", "-"),
-                        buildDetailRow("Keadaan Ibu Kandung", "-"),
-                        buildDetailRow("Pendidikan", "-"),
-                        buildDetailRow("Pekerjaan", "-"),
-                        buildDetailRow("Alamat", "-"),
-                        buildDetailRow("Phone", "-"),
-
-                        SizedBox(height: 10.h),
-
-                        buildSectionTitle("Data Orang Tua Asuh/Wali"),
-                        buildDetailRow("Status Orang Tua Asuh/Wali", "-"),
+                        buildDetailRow("NIP", nip),
+                        buildDetailRow("Jenis Kelamin", pengajar.jenisKelamin),
+                        buildDetailRow("Email", pengajar.email),
+                        buildDetailRow("Phone", pengajar.noTelp),
+                        buildDetailRow("Alamat", pengajar.alamat),
+                        // buildDetailRow("Kelas", pengajar.kelasNama),
                       ],
                     ),
                   ),
                 ),
-
-                // Avatar
                 Positioned(
                   top: 0,
                   left: MediaQuery.of(context).size.width / 2 - 55.w,
@@ -156,7 +124,7 @@ class _DetailDataSantriState extends State<DetailDataSantri> {
                         backgroundColor: Colors.white,
                         child: ClipOval(
                           child: CachedNetworkImage(
-                            imageUrl: santriPict,
+                            imageUrl: pengajarPict,
                             width: 100.r,
                             height: 100.r,
                             fit: BoxFit.cover,
@@ -165,7 +133,7 @@ class _DetailDataSantriState extends State<DetailDataSantri> {
                             errorWidget: (context, url, error) {
                               print("❌ Gagal load gambar: $url $error");
                               return Image.asset(
-                                santri.jenisKelamin == "Laki-Laki"
+                                pengajar.jenisKelamin == "Laki-Laki"
                                     ? "assets/ikhwan.png"
                                     : "assets/akhwat.png",
                                 fit: BoxFit.cover,

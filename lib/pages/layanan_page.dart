@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LayananPage extends StatelessWidget {
@@ -8,27 +9,27 @@ class LayananPage extends StatelessWidget {
       "icon": Icons.flag_outlined,
       "label": "Target Hafalan"
     },
+    {"color": Colors.teal, "icon": Icons.people, "label": "Data Santri"},
+    {"color": Colors.blueGrey, "icon": Icons.person, "label": "Data Pengajar"},
+    {
+      "color": Colors.deepPurple,
+      "icon": Icons.checklist_rounded,
+      "label": "Evaluasi Muroja'ah"
+    },
     {
       "color": Colors.pink,
       "icon": Icons.account_balance_wallet_rounded,
       "label": "Data Infaq"
     },
     {
-      "color": Colors.amber,
-      "icon": Icons.list_alt_rounded,
-      "label": "Management Hafalan"
-    },
-    {
-      "color": Colors.deepPurple,
-      "icon": Icons.checklist_rounded,
-      "label": "Evaluasi Muroja'ah"
-    },
-    {"color": Colors.teal, "icon": Icons.people, "label": "Data Santri"},
-    {"color": Colors.blueGrey, "icon": Icons.person, "label": "Data Pengajar"},
-    {
       "color": Colors.blue,
       "icon": Icons.fact_check_outlined,
       "label": "Rekap Absensi"
+    },
+    {
+      "color": Colors.amber,
+      "icon": Icons.list_alt_rounded,
+      "label": "Management Hafalan"
     },
     {
       "color": Colors.red,
@@ -48,7 +49,21 @@ class LayananPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Colors.green, Colors.teal],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(15.r),
+            ),
+          ),
+        ),
         title: const Text(
           "Layanan",
           style: TextStyle(color: Colors.white),

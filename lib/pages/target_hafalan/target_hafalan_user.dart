@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_hamalatulquran/pages/target_hafalan/history_target_hafalan.dart';
 
 class TargetHafalanUser extends StatefulWidget {
   final String nisn;
+  final String nama;
+  final String kelas;
 
-  const TargetHafalanUser({super.key, required this.nisn});
+  const TargetHafalanUser(
+      {super.key, required this.nisn, required this.nama, required this.kelas});
 
   @override
   State<TargetHafalanUser> createState() => _TargetHafalanUserState();
@@ -20,6 +24,7 @@ class _TargetHafalanUserState extends State<TargetHafalanUser> {
   void initState() {
     super.initState();
     fetchTargetHafalan();
+    print("NISN: ${widget.nisn}, Nama: ${widget.nama}, Kelas: ${widget.kelas}");
   }
 
   Future<void> fetchTargetHafalan() async {
@@ -38,10 +43,23 @@ class _TargetHafalanUserState extends State<TargetHafalanUser> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green,
+      backgroundColor: Colors.green.shade800,
       appBar: AppBar(
-        backgroundColor: Colors.green,
-        toolbarHeight: 60.h,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Colors.green, Colors.teal],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(15.r),
+            ),
+          ),
+        ),
         title: Text(
           "Target Hafalan",
           style: GoogleFonts.poppins(
@@ -70,19 +88,12 @@ class _TargetHafalanUserState extends State<TargetHafalanUser> {
 
   Widget _headerSection() {
     return Container(
-      padding: EdgeInsets.only(top: 40.h, bottom: 30.h),
-      decoration: BoxDecoration(
-        color: Colors.green,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(30.r),
-          bottomRight: Radius.circular(30.r),
-        ),
-      ),
+      padding: EdgeInsets.symmetric(vertical: 40.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            "Rizka",
+            widget.nama,
             style: GoogleFonts.poppins(
               color: Colors.white,
               fontSize: 20.sp,
@@ -91,14 +102,14 @@ class _TargetHafalanUserState extends State<TargetHafalanUser> {
           ),
           SizedBox(height: 5.h),
           Text(
-            "2201091013",
+            widget.nisn,
             style: GoogleFonts.poppins(
               color: Colors.white,
               fontSize: 14.sp,
             ),
           ),
           Text(
-            "Kelas 3A",
+            widget.kelas,
             style: GoogleFonts.poppins(
               color: Colors.white,
               fontSize: 14.sp,
