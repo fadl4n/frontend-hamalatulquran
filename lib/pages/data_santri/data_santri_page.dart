@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:frontend_hamalatulquran/repositories/santri_repository.dart';
+import 'package:frontend_hamalatulquran/services/search_util.dart';
+import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
+import 'package:frontend_hamalatulquran/widgets/santri_tile.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend_hamalatulquran/pages/data_santri/detail_data_santri.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_hamalatulquran/models/santri_model.dart';
-import 'package:frontend_hamalatulquran/services/api_service.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:frontend_hamalatulquran/widgets/search.dart';
 
 class DataSantriPage extends StatefulWidget {
   final int id;
@@ -18,78 +18,49 @@ class DataSantriPage extends StatefulWidget {
 }
 
 class _DataSantriPageState extends State<DataSantriPage> {
-  late Future<List<Santri>> futureSantri;
+  late Future<List<Santri>> _futureSantri;
+  List<Santri> santriListAsli = [];
+  List<Santri> santriListFiltered = [];
+
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    futureSantri = ApiService().fetchSantriByKelas(widget.id);
+    _futureSantri = SantriRepository.getbyKelasId(widget.id).then((listSantri) {
+      santriListAsli = listSantri;
+      santriListFiltered = listSantri;
+      return listSantri;
+    });
+  }
+
+  void _filterSantri(String keyword) {
+    setState(() {
+      santriListFiltered = SearchUtil.filterList<Santri>(
+        santriListAsli,
+        keyword,
+        (santri, key) =>
+            santri.nama.toLowerCase().contains(key.toLowerCase()),
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Colors.green, Colors.teal],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(15.r),
-            ),
-          ),
-        ),
-        title: Text(
-          "Data Santri Kelas ${widget.namaKelas}",
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-        leading: InkWell(
-          onTap: () => Navigator.pop(context),
-          borderRadius: BorderRadius.circular(20.r),
-          child: Center(
-            child: Icon(Icons.arrow_back_ios_new_rounded,
-                color: Colors.white, size: 20.w),
-          ),
-        ),
-      ),
+      appBar: CustomAppbar(
+          title: "Data Santri Kelas ${widget.namaKelas}", fontSize: 16.sp),
       body: Padding(
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.all(15.w),
         child: Column(
           children: [
             // Search Bar
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.green.shade100,
-                borderRadius: BorderRadius.circular(25.r),
-              ),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: "Search",
-                  prefixIcon: const Icon(Icons.search_rounded),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 10.h),
-                ),
-              ),
-            ),
-            SizedBox(height: 10.h),
-            const Divider(),
-            SizedBox(height: 10.h),
-
+            SearchWithDivider(
+                controller: searchController, onChanged: _filterSantri),
             // List Santri
             Expanded(
               child: FutureBuilder<List<Santri>>(
-                future: futureSantri,
+                future: _futureSantri,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -104,7 +75,8 @@ class _DataSantriPageState extends State<DataSantriPage> {
                           ElevatedButton(
                             onPressed: () {
                               setState(() {
-                                futureSantri = ApiService().fetchSantri();
+                                _futureSantri =
+                                    SantriRepository.getbyKelasId(widget.id);
                               });
                             },
                             child: const Text("Coba Lagi"),
@@ -116,139 +88,32 @@ class _DataSantriPageState extends State<DataSantriPage> {
                     return const Center(child: Text("Tidak ada data santri."));
                   }
 
-                  List<Santri> santriList = snapshot.data!;
+                  if (santriListAsli.isEmpty) {
+                    santriListAsli = snapshot.data!;
+                    santriListFiltered = santriListAsli;
+                  }
                   return ListView.builder(
-                    itemCount: santriList.length,
+                    itemCount: santriListFiltered.length,
                     itemBuilder: (context, index) {
-                      return SantriTile(santri: santriList[index]);
+                      final santri = santriListFiltered[index];
+                      return SantriTile(
+                        santri: santri,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetailDataSantri(
+                                  id: santri.id, nama: santri.nama),
+                            ),
+                          );
+                        },
+                      );
                     },
                   );
                 },
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-// 🔥 Custom Widget untuk ListTile Santri
-class SantriTile extends StatelessWidget {
-  final Santri santri;
-  const SantriTile({super.key, required this.santri});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 8.h),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => DetailDataSantri(id: santri.id),
-            ),
-          );
-        },
-        borderRadius: BorderRadius.circular(10.r),
-        child: Ink(
-          padding: EdgeInsets.all(15.w),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(15.r),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.20),
-                blurRadius: 15,
-                offset: const Offset(2, 7),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              // Avatar with Border
-              Container(
-                width: 50.w,
-                height: 50.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [Colors.teal.shade300, Colors.green.shade400],
-                  ),
-                ),
-                padding: EdgeInsets.all(2.w),
-                child: CircleAvatar(
-                  backgroundColor: Colors.white,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(100.r),
-                    child: (santri.fotoSantri != null &&
-                            santri.fotoSantri!.isNotEmpty &&
-                            santri.fotoSantri!.startsWith("http"))
-                        ? CachedNetworkImage(
-                            imageUrl: santri.fotoSantri!,
-                            width: 46.w,
-                            height: 46.w,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Shimmer.fromColors(
-                              baseColor: Colors.grey.shade300,
-                              highlightColor: Colors.grey.shade100,
-                              child: Container(
-                                width: 46.w,
-                                height: 46.w,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey,
-                                  borderRadius: BorderRadius.circular(100.r),
-                                ),
-                              ),
-                            ),
-                            errorWidget: (context, url, error) => Image.asset(
-                              santri.jenisKelamin == "Laki-Laki"
-                                  ? "assets/ikhwan.png"
-                                  : "assets/akhwat.png",
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        : Image.asset(
-                            santri.jenisKelamin == "Laki-Laki"
-                                ? "assets/ikhwan.png"
-                                : "assets/akhwat.png",
-                            width: 46.w,
-                            height: 46.w,
-                            fit: BoxFit.cover,
-                          ),
-                  ),
-                ),
-              ),
-              SizedBox(width: 10.w),
-
-              // Nama & Info Santri
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      santri.nama,
-                      style: GoogleFonts.poppins(
-                        fontSize: 15.sp,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Text(
-                      santri.nisn,
-                      style: GoogleFonts.poppins(
-                        fontSize: 12.sp,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              Icon(Icons.arrow_forward_ios_rounded,
-                  size: 16.w, color: Colors.grey.shade400),
-            ],
-          ),
         ),
       ),
     );

@@ -12,6 +12,7 @@ class Santri {
   final String jenisKelamin;
   final String email;
   final String status;
+  final int? idGroup;  // Tambahkan idGroup jika diperlukan
 
   Santri({
     required this.id,
@@ -27,6 +28,7 @@ class Santri {
     required this.jenisKelamin,
     required this.email,
     required this.status,
+    this.idGroup,  // Tambahkan idGroup pada konstruktor
   });
 
   factory Santri.fromJson(Map<String, dynamic> json) {
@@ -58,6 +60,7 @@ class Santri {
       jenisKelamin: isIkhwan ? "Laki-Laki" : "Perempuan",
       email: json['email'],
       status: json['status'].toString(),
+      idGroup: json['id_group'], // Ambil id_group dari API jika ada
     );
   }
 

@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:frontend_hamalatulquran/models/santri_model.dart';
+import 'package:frontend_hamalatulquran/pages/evaluasi_murojaah/evaluasi_list_surat.dart';
 import 'package:frontend_hamalatulquran/repositories/santri_repository.dart';
 import 'package:frontend_hamalatulquran/services/search_util.dart';
 import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
 import 'package:frontend_hamalatulquran/widgets/santri_tile.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:frontend_hamalatulquran/pages/target_hafalan/target_hafalan_santri.dart';
-import 'package:frontend_hamalatulquran/models/santri_model.dart';
 import 'package:frontend_hamalatulquran/widgets/search.dart';
 
-class TargetHafalanPage extends StatefulWidget {
-  const TargetHafalanPage({super.key});
+class EvaluasiListSantri extends StatefulWidget {
+  const EvaluasiListSantri({super.key});
 
   @override
-  State<TargetHafalanPage> createState() => _TargetHafalanPageState();
+  State<EvaluasiListSantri> createState() => _EvaluasiListSantriState();
 }
 
-class _TargetHafalanPageState extends State<TargetHafalanPage> {
+class _EvaluasiListSantriState extends State<EvaluasiListSantri> {
   late Future<List<Santri>> futureSantri;
   List<Santri> santriListAsli = [];
   List<Santri> santriListFiltered = [];
@@ -46,7 +46,7 @@ class _TargetHafalanPageState extends State<TargetHafalanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppbar(title: "Target Hafalan", fontSize: 18.sp),
+      appBar: CustomAppbar(title: "Evaluasi Muroja'ah", fontSize: 18.sp),
       body: Padding(
         padding: EdgeInsets.all(15.w),
         child: Column(
@@ -100,7 +100,7 @@ class _TargetHafalanPageState extends State<TargetHafalanPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => TargetHafalanSantri(
+                              builder: (context) => EvaluasiListSurat(
                                 santri: santri
                               ),
                             ),

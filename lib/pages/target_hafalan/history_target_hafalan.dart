@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:frontend_hamalatulquran/models/santri_model.dart';
+import 'package:frontend_hamalatulquran/services/form_helper.dart';
+import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
+import 'package:frontend_hamalatulquran/widgets/header_evaluasi.dart';
+import 'package:frontend_hamalatulquran/widgets/profile_avatar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 import 'package:intl/intl.dart';
@@ -9,9 +13,13 @@ import 'dart:ui';
 class HistoryTargetHafalan extends StatefulWidget {
   final String namaSurat;
   final int jumlahAyat;
+  final Santri santri;
 
   const HistoryTargetHafalan(
-      {super.key, required this.namaSurat, required this.jumlahAyat});
+      {super.key,
+      required this.namaSurat,
+      required this.jumlahAyat,
+      required this.santri});
 
   @override
   State<HistoryTargetHafalan> createState() => _HistoryTargetHafalanState();
@@ -27,7 +35,8 @@ class _HistoryTargetHafalanState extends State<HistoryTargetHafalan> {
     },
   ];
 
-  void _showInputHafalanForm() {
+  void _showInputHafalanForm(
+      {required String imageUrl, required String gender}) {
     print("Nama Surat: ${widget.namaSurat}"); // Debugging
 
     TextEditingController suratController =
@@ -63,7 +72,7 @@ class _HistoryTargetHafalanState extends State<HistoryTargetHafalan> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          "Rizka",
+                          widget.santri.nama,
                           style: GoogleFonts.poppins(
                             fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
@@ -71,7 +80,7 @@ class _HistoryTargetHafalanState extends State<HistoryTargetHafalan> {
                           ),
                         ),
                         Text(
-                          "2201091013",
+                          widget.santri.nisn,
                           style: GoogleFonts.poppins(
                             fontSize: 16.sp,
                             color: Colors.black54,
@@ -175,15 +184,13 @@ class _HistoryTargetHafalanState extends State<HistoryTargetHafalan> {
                   ),
 
                   // Avatar di luar card
+                  // Ganti bagian ini:
                   Positioned(
                     top: -55.h,
-                    child: CircleAvatar(
-                      radius: 55.r,
-                      backgroundColor: Colors.white,
-                      child: CircleAvatar(
-                        radius: 52.r,
-                        backgroundImage: AssetImage('assets/profile.jpg'),
-                      ),
+                    child: ProfileAvatar(
+                      imageUrl: imageUrl, // Pastikan ini ada di widget-mu
+                      gender: gender, // Pastikan ini juga ada
+                      size: 110, // Karena radius sebelumnya 55.r
                     ),
                   ),
                 ],
@@ -195,112 +202,27 @@ class _HistoryTargetHafalanState extends State<HistoryTargetHafalan> {
     );
   }
 
-  // Widget untuk label
-  Widget buildLabel(String text) {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: Text(
-        text,
-        style: GoogleFonts.poppins(
-          color: Colors.green.shade800,
-          fontWeight: FontWeight.bold,
-          fontSize: 14.sp,
-        ),
-      ),
-    );
-  }
-
-// Widget untuk input field
-  Widget buildTextField(String hintText,
-      {bool readOnly = false, TextEditingController? controller}) {
-    return TextField(
-      controller: controller,
-      readOnly: readOnly,
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: Colors.green.shade100,
-        contentPadding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 15.w),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-        ),
-        hintText: "Masukkan Ayat",
-        hintStyle: GoogleFonts.poppins(color: Colors.grey.shade600),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.green.shade800,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Colors.green, Colors.teal],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(15.r),
-            ),
-          ),
-        ),
-        title: Text(
-          "Target Hafalan",
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded,
-              color: Colors.white, size: 20.w),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
+      appBar: CustomAppbar(title: "Target Hafalan", fontSize: 18.sp),
       body: Column(
         children: [
-          _headerSection(),
+          HeaderEvaluasi(
+            title: widget.namaSurat,
+            jumlahAyat: widget.jumlahAyat,
+          ),
           Expanded(child: _historySection()),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _showInputHafalanForm,
+        onPressed: () => _showInputHafalanForm(
+          imageUrl: widget.santri.fotoSantri ?? '',
+          gender: widget.santri.jenisKelamin,
+        ),
         backgroundColor: Colors.green,
         child: const Icon(Icons.add, color: Colors.white),
-      ),
-    );
-  }
-
-  Widget _headerSection() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 50.h),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            widget.namaSurat,
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 20.sp,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 5.h),
-          Text(
-            "Jumlah Ayat: ${widget.jumlahAyat}",
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 14.sp,
-            ),
-          ),
-        ],
       ),
     );
   }

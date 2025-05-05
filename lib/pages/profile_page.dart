@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
+import 'package:frontend_hamalatulquran/widgets/data_detail_shimmer.dart';
+import 'package:frontend_hamalatulquran/widgets/profile_shimmer.dart';
 import 'package:google_fonts/google_fonts.dart';
-// import 'dart:io'; // Untuk Android & iOS
-// import 'package:flutter/foundation.dart';
 import 'package:frontend_hamalatulquran/services/api_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -16,6 +16,8 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   Future<Map<String, dynamic>>? _profileFuture;
+  bool isPengajar = false;
+  bool isSantri = false;
 
   @override
   void initState() {
@@ -47,51 +49,14 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Colors.green, Colors.teal],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(15.r),
-            ),
-          ),
-        ),
-        title: Text(
-          "Profil",
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-        leading: SizedBox(
-          width: 60.w,
-          height: 60.h,
-          child: InkWell(
-            onTap: () => Navigator.pop(context),
-            borderRadius: BorderRadius.circular(20.r),
-            child: Center(
-              child: Icon(Icons.arrow_back_ios_new_rounded,
-                  color: Colors.white, size: 20.w),
-            ),
-          ),
-        ),
-      ),
+      appBar: CustomAppbar(title: "Profile Anda", fontSize: 18.sp),
       body: RefreshIndicator(
         onRefresh: refreshProfile,
         child: FutureBuilder<Map<String, dynamic>>(
           future: _profileFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const ProfileShimmer();
             } else if (snapshot.hasError ||
                 snapshot.data == null ||
                 snapshot.data!.containsKey("error")) {
@@ -109,6 +74,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 profile['nip'] ?? profile['nisn'] ?? 'Tidak ada NIP/NISN';
             final profilePict =
                 profile['foto_profil'] ?? "https://via.placeholder.com/150";
+
+            // Tentukan apakah pengguna adalah Pengajar atau Santri
+            isPengajar = profile['nip'] != null;
+            isSantri = profile['nisn'] != null;
 
             print("📸 Profile Data: $profile");
 
@@ -150,7 +119,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   height: 110.r,
                                   fit: BoxFit.cover,
                                   placeholder: (context, url) =>
-                                      const CircularProgressIndicator(),
+                                      const DataDetailShimmer(),
                                   errorWidget: (context, url, error) =>
                                       Image.asset(
                                     "assets/user.png",
@@ -218,8 +187,38 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        _buildMenuItem(
-                            context, Icons.visibility, "Data Pengajar"),
+                        // Menampilkan menu sesuai dengan status login
+                        if (isPengajar) ...[
+                          _buildMenuItem(
+                            context,
+                            Icons.visibility,
+                            "Data Pengajar",
+                            onTap: () {
+                              print(
+                                  "Navigating to /detail-pengajar with ID: ${profile['id']}");
+                              Navigator.pushNamed(
+                                context,
+                                '/detail-pengajar',
+                                arguments: profile['id'],
+                              );
+                            },
+                          ),
+                        ] else if (isSantri) ...[
+                          _buildMenuItem(
+                            context,
+                            Icons.visibility,
+                            "Data Santri",
+                            onTap: () {
+                              print(
+                                  "Navigating to /detail-santri with ID: ${profile['id']}");
+                              Navigator.pushNamed(
+                                context,
+                                '/detail-santri',
+                                arguments: profile['id'],
+                              );
+                            },
+                          ),
+                        ],
                         const Divider(),
                         _buildMenuItem(context, Icons.lock, "Ganti Kata Sandi"),
                         const Divider(),
@@ -237,30 +236,29 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildMenuItem(BuildContext context, IconData icon, String title) {
+  Widget _buildMenuItem(
+    BuildContext context,
+    IconData icon,
+    String title, {
+    VoidCallback? onTap,
+  }) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(10.r),
-        onTap: () {
-          if (title == "Keluar") {
-            _showExitDialog(context);
-          } else if (title == "Ganti Kata Sandi") {
-            Navigator.pushNamed(context, '/ganti-pw');
-          }
-        },
+        onTap: onTap ??
+            () {
+              if (title == "Keluar") {
+                _showExitDialog(context);
+              } else if (title == "Ganti Kata Sandi") {
+                Navigator.pushNamed(context, '/ganti-pw');
+              }
+            },
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
           child: Row(
             children: [
-              IconTheme(
-                data: IconThemeData(
-                  size: 22.w,
-                  weight: 700,
-                  color: Colors.black54,
-                ),
-                child: Icon(icon),
-              ),
+              Icon(icon, size: 22.w, color: Colors.black54),
               SizedBox(width: 12.w),
               Expanded(
                 child: Text(
@@ -269,14 +267,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       fontSize: 12.sp, fontWeight: FontWeight.w500),
                 ),
               ),
-              IconTheme(
-                data: IconThemeData(
-                  size: 16.w,
-                  weight: 700,
-                  color: Colors.black54,
-                ),
-                child: const Icon(Icons.arrow_forward_ios_rounded),
-              ),
+              Icon(Icons.arrow_forward_ios_rounded,
+                  size: 16.w, color: Colors.black54),
             ],
           ),
         ),

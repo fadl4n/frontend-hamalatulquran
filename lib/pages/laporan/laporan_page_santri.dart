@@ -1,31 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:frontend_hamalatulquran/models/santri_model.dart';
+import 'package:frontend_hamalatulquran/pages/laporan/laporan_detail_page.dart';
 import 'package:frontend_hamalatulquran/repositories/santri_repository.dart';
 import 'package:frontend_hamalatulquran/services/search_util.dart';
 import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
 import 'package:frontend_hamalatulquran/widgets/santri_tile.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:frontend_hamalatulquran/pages/target_hafalan/target_hafalan_santri.dart';
-import 'package:frontend_hamalatulquran/models/santri_model.dart';
 import 'package:frontend_hamalatulquran/widgets/search.dart';
 
-class TargetHafalanPage extends StatefulWidget {
-  const TargetHafalanPage({super.key});
+class LaporanPageSantri extends StatefulWidget {
+  final int id;
+  final String namaKelas;
+  const LaporanPageSantri(
+      {super.key, required this.id, required this.namaKelas});
 
   @override
-  State<TargetHafalanPage> createState() => _TargetHafalanPageState();
+  State<LaporanPageSantri> createState() => _LaporanPageSantriState();
 }
 
-class _TargetHafalanPageState extends State<TargetHafalanPage> {
+class _LaporanPageSantriState extends State<LaporanPageSantri> {
+  late Future<List<Santri>> _futureSantri;
   late Future<List<Santri>> futureSantri;
   List<Santri> santriListAsli = [];
   List<Santri> santriListFiltered = [];
 
   TextEditingController searchController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
-    futureSantri = SantriRepository.getAll().then((listSantri) {
+    _futureSantri = SantriRepository.getbyKelasId(widget.id).then((listSantri) {
       santriListAsli = listSantri;
       santriListFiltered = listSantri;
       return listSantri;
@@ -38,7 +41,7 @@ class _TargetHafalanPageState extends State<TargetHafalanPage> {
         santriListAsli,
         keyword,
         (santri, key) =>
-            santri.nama.toLowerCase().contains(key.toLowerCase()) ,
+            santri.nama.toLowerCase().contains(key.toLowerCase()),
       );
     });
   }
@@ -46,24 +49,22 @@ class _TargetHafalanPageState extends State<TargetHafalanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppbar(title: "Target Hafalan", fontSize: 18.sp),
+      appBar: CustomAppbar(title: "Laporan Santri Kelas ${widget.namaKelas}", fontSize: 16.sp),
       body: Padding(
         padding: EdgeInsets.all(15.w),
         child: Column(
           children: [
-            // Search Bar
             SearchWithDivider(
-              controller: searchController,
-              onChanged: _filterSantri,
-            ),
-            // List Santri
+                controller: searchController, onChanged: _filterSantri),
+            //List Santri
             Expanded(
               child: FutureBuilder<List<Santri>>(
-                future: futureSantri,
+                future: _futureSantri,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
+                    print("🛑 Error: ${snapshot.error}");
                     return Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -73,15 +74,16 @@ class _TargetHafalanPageState extends State<TargetHafalanPage> {
                           ElevatedButton(
                             onPressed: () {
                               setState(() {
-                                futureSantri = SantriRepository.getAll();
+                                _futureSantri =
+                                    SantriRepository.getbyKelasId(widget.id);
                               });
                             },
-                            child: Text("Coba Lagi"),
+                            child: const Text("Coba Lagi"),
                           ),
                         ],
                       ),
                     );
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  } else if (snapshot.hasData && snapshot.data!.isEmpty) {
                     return const Center(child: Text("Tidak ada data santri."));
                   }
 
@@ -89,7 +91,6 @@ class _TargetHafalanPageState extends State<TargetHafalanPage> {
                     santriListAsli = snapshot.data!;
                     santriListFiltered = santriListAsli;
                   }
-
                   return ListView.builder(
                     itemCount: santriListFiltered.length,
                     itemBuilder: (context, index) {
@@ -100,9 +101,8 @@ class _TargetHafalanPageState extends State<TargetHafalanPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => TargetHafalanSantri(
-                                santri: santri
-                              ),
+                              builder: (context) => LaporanDetailPage(
+                                  id: santri.id, nama: santri.nama),
                             ),
                           );
                         },

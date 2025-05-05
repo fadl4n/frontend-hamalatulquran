@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
 
 class LayananPage extends StatelessWidget {
   final List<Map<String, dynamic>> layananItems = [
@@ -48,33 +48,7 @@ class LayananPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Colors.green, Colors.teal],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(15.r),
-            ),
-          ),
-        ),
-        title: const Text(
-          "Layanan",
-          style: TextStyle(color: Colors.white),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon:
-              const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
+      appBar: CustomAppbar(title: "Layanan", fontSize: 18.sp),
       body: Padding(
         padding: EdgeInsets.all(20.w),
         child: GridView.builder(

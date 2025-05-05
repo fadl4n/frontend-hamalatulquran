@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend_hamalatulquran/models/pengajar_model.dart';
+import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
 import 'package:frontend_hamalatulquran/widgets/data_detail_shimmer.dart';
+import 'package:frontend_hamalatulquran/widgets/detail_data_layout.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_hamalatulquran/services/api_service.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class DetailDataPengajar extends StatefulWidget {
   final int id;
-  const DetailDataPengajar({super.key, required this.id});
+  final String? nama;
+  const DetailDataPengajar({super.key, required this.id, this.nama});
 
   @override
   State<DetailDataPengajar> createState() => _DetailDataPengajarState();
@@ -27,43 +28,7 @@ class _DetailDataPengajarState extends State<DetailDataPengajar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Colors.green, Colors.teal],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(15.r),
-            ),
-          ),
-        ),
-        title: Text(
-          "Data Pengajar",
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-        leading: InkWell(
-          onTap: () => Navigator.pop(context),
-          borderRadius: BorderRadius.circular(20.r),
-          child: Center(
-            child: Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: Colors.white,
-              size: 20.w,
-            ),
-          ),
-        ),
-      ),
+      appBar: CustomAppbar(title: "Data ${widget.nama}", fontSize: 16),
       body: FutureBuilder(
         future: _futurePengajar,
         builder: (context, snapshot) {
@@ -80,82 +45,20 @@ class _DetailDataPengajarState extends State<DetailDataPengajar> {
               : "https://via.placeholder.com/150";
 
           print("📸 profil pict Santri: ${pengajar.fotoPengajar}");
-
-          return SingleChildScrollView(
-            padding: EdgeInsets.only(top: 30.h),
-            child: Stack(
-              clipBehavior: Clip.none,
+          return DetailDataLayout(
+            imageUrl: pengajarPict,
+            gender: pengajar.jenisKelamin,
+            detailContent: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  margin: EdgeInsets.only(top: 60.h),
-                  padding: EdgeInsets.fromLTRB(16.w, 70.h, 16.w, 10.h),
-                  decoration: BoxDecoration(
-                    color: Colors.green.shade50,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(40.r),
-                      topRight: Radius.circular(40.r),
-                    ),
-                  ),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                        minHeight: MediaQuery.of(context).size.height),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        buildSectionTitle("Data Pribadi"),
-                        buildDetailRow("Nama", nama),
-                        buildDetailRow("NIP", nip),
-                        buildDetailRow("Jenis Kelamin", pengajar.jenisKelamin),
-                        buildDetailRow("Email", pengajar.email),
-                        buildDetailRow("Phone", pengajar.noTelp),
-                        buildDetailRow("Alamat", pengajar.alamat),
-                        // buildDetailRow("Kelas", pengajar.kelasNama),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 0,
-                  left: MediaQuery.of(context).size.width / 2 - 55.w,
-                  child: Stack(
-                    children: [
-                      CircleAvatar(
-                        radius: 55.r,
-                        backgroundColor: Colors.white,
-                        child: ClipOval(
-                          child: CachedNetworkImage(
-                            imageUrl: pengajarPict,
-                            width: 100.r,
-                            height: 100.r,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) =>
-                                const CircularProgressIndicator(),
-                            errorWidget: (context, url, error) {
-                              print("❌ Gagal load gambar: $url $error");
-                              return Image.asset(
-                                pengajar.jenisKelamin == "Laki-Laki"
-                                    ? "assets/ikhwan.png"
-                                    : "assets/akhwat.png",
-                                fit: BoxFit.cover,
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 4,
-                        right: 4,
-                        child: Container(
-                          padding: EdgeInsets.all(2.w),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                buildSectionTitle("Data Pribadi"),
+                buildDetailRow("Nama", nama),
+                buildDetailRow("NIP", nip),
+                buildDetailRow("Jenis Kelamin", pengajar.jenisKelamin),
+                buildDetailRow("Email", pengajar.email),
+                buildDetailRow("Phone", pengajar.noTelp),
+                buildDetailRow("Alamat", pengajar.alamat),
+                // buildDetailRow("Kelas", pengajar.kelasNama),
               ],
             ),
           );

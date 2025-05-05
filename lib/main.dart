@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_hamalatulquran/pages/data_pengajar/detail_data_pengajar.dart';
+import 'package:frontend_hamalatulquran/pages/data_santri/detail_data_santri.dart';
 import 'package:frontend_hamalatulquran/pages/ganti_pw.dart';
 import 'package:frontend_hamalatulquran/screens/splash_screen.dart';
 import 'package:frontend_hamalatulquran/pages/login_page.dart';
@@ -22,11 +24,35 @@ void main() async {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           initialRoute: '/',
-          routes: {
-            '/': (context) => const SplashScreen(),
-            '/login': (context) => const LoginPage(),
-            '/profile': (context) => const ProfilePage(),
-            '/ganti-pw': (context) => const GantiPassword()
+          onGenerateRoute: (settings) {
+            switch (settings.name) {
+              case '/':
+                return MaterialPageRoute(builder: (_) => const SplashScreen());
+              case '/login':
+                return MaterialPageRoute(builder: (_) => const LoginPage());
+              case '/profile':
+                return MaterialPageRoute(builder: (_) => const ProfilePage());
+              case '/ganti-pw':
+                return MaterialPageRoute(builder: (_) => const GantiPassword());
+              case '/detail-pengajar':
+                final id = settings.arguments as int;
+                return MaterialPageRoute(
+                  builder: (_) => DetailDataPengajar(id: id),
+                );
+              case '/detail-santri':
+                final id = settings.arguments as int;
+                return MaterialPageRoute(
+                  builder: (_) => DetailDataSantri(id: id),
+                );
+              default:
+                return MaterialPageRoute(
+                  builder: (_) => Scaffold(
+                    body: Center(
+                        child:
+                            Text("😵 Rute '${settings.name}' gak ditemukan!")),
+                  ),
+                );
+            }
           },
         );
       },

@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:frontend_hamalatulquran/pages/data_santri/data_santri_page.dart';
+import 'package:frontend_hamalatulquran/models/kelas_model.dart';
+import 'package:frontend_hamalatulquran/pages/laporan/laporan_page_santri.dart';
 import 'package:frontend_hamalatulquran/repositories/kelas_repository.dart';
 import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
 import 'package:frontend_hamalatulquran/widgets/kelas_tile.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:frontend_hamalatulquran/models/kelas_model.dart';
 
-class DataKelasPage extends StatefulWidget {
-  const DataKelasPage({super.key});
+class LaporanPageKelas extends StatefulWidget {
+  const LaporanPageKelas({super.key});
 
   @override
-  State<DataKelasPage> createState() => _DataKelasPageState();
+  State<LaporanPageKelas> createState() => _LaporanPageKelasState();
 }
 
-class _DataKelasPageState extends State<DataKelasPage> {
+class _LaporanPageKelasState extends State<LaporanPageKelas> {
   late Future<List<Kelas>> futureKelas;
 
   @override
@@ -26,7 +26,7 @@ class _DataKelasPageState extends State<DataKelasPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppbar(title: "Data Kelas", fontSize: 18.sp),
+      appBar: CustomAppbar(title: "Laporan", fontSize: 18.sp),
       body: Padding(
         padding: EdgeInsets.all(15.w),
         child: Column(
@@ -82,7 +82,7 @@ class _DataKelasPageState extends State<DataKelasPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => DataSantriPage(
+                              builder: (context) => LaporanPageSantri(
                                 id: kelas.id,
                                 namaKelas: kelas.nama,
                               ),

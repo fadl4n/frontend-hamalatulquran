@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:frontend_hamalatulquran/models/santri_model.dart';
 import 'package:frontend_hamalatulquran/repositories/santri_repository.dart';
 import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
+import 'package:frontend_hamalatulquran/widgets/custom_table.dart';
 import 'package:frontend_hamalatulquran/widgets/data_detail_shimmer.dart';
 import 'package:frontend_hamalatulquran/widgets/detail_data_layout.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:frontend_hamalatulquran/models/santri_model.dart';
 
-class DetailDataSantri extends StatefulWidget {
+class LaporanDetailPage extends StatefulWidget {
   final int id;
-  final String? nama;
-  const DetailDataSantri({super.key, required this.id, this.nama});
+  final String nama;
+  const LaporanDetailPage({super.key, required this.id, required this.nama});
 
   @override
-  State<DetailDataSantri> createState() => _DetailDataSantriState();
+  State<LaporanDetailPage> createState() => _LaporanDetailPageState();
 }
 
-class _DetailDataSantriState extends State<DetailDataSantri> {
+class _LaporanDetailPageState extends State<LaporanDetailPage> {
   late Future<Santri> _futureSantri;
 
   @override
@@ -28,12 +29,9 @@ class _DetailDataSantriState extends State<DetailDataSantri> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppbar(
-          title: (widget.nama?.isNotEmpty ?? false)
-              ? "Data ${widget.nama}"
-              : "Profile Anda",
-          fontSize: 16.sp),
-      body: FutureBuilder<Santri>(
+      appBar:
+          CustomAppbar(title: "Laporan Detail ${widget.nama}", fontSize: 16),
+      body: FutureBuilder(
         future: _futureSantri,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -49,7 +47,6 @@ class _DetailDataSantriState extends State<DetailDataSantri> {
               : "https://via.placeholder.com/150";
 
           print("📸 profil pict Santri: ${santri.fotoSantri}");
-
           return DetailDataLayout(
             imageUrl: santriPict,
             gender: santri.jenisKelamin,
@@ -61,37 +58,46 @@ class _DetailDataSantriState extends State<DetailDataSantri> {
                 buildDetailRow("Tempat, tanggal lahir",
                     "${santri.tempatLahir}, ${santri.tglLahir}"),
                 buildDetailRow("Jenis Kelamin", santri.jenisKelamin),
-                buildDetailRow("Email", santri.email),
-                // buildDetailRow("Phone", santri.phone),
-                buildDetailRow("Alamat", santri.alamat),
                 buildDetailRow("Kelas", santri.kelasNama),
-
-                SizedBox(height: 10.h),
-
-                buildSectionTitle("Data Ayah Kandung"),
-                buildDetailRow("Nama Bapak Kandung", "-"), // sementara
-                buildDetailRow("Tempat, tanggal lahir", "-"),
-                buildDetailRow("Keadaan Bapak Kandung", "-"),
-                buildDetailRow("Pendidikan", "-"),
-                buildDetailRow("Pekerjaan", "-"),
-                buildDetailRow("Alamat", "-"),
-                buildDetailRow("Phone", "-"),
-
-                SizedBox(height: 10.h),
-
-                buildSectionTitle("Data Ibu Kandung"),
-                buildDetailRow("Nama Ibu Kandung", "-"),
-                buildDetailRow("Tempat, tanggal lahir", "-"),
-                buildDetailRow("Keadaan Ibu Kandung", "-"),
-                buildDetailRow("Pendidikan", "-"),
-                buildDetailRow("Pekerjaan", "-"),
-                buildDetailRow("Alamat", "-"),
-                buildDetailRow("Phone", "-"),
-
-                SizedBox(height: 10.h),
-
-                buildSectionTitle("Data Orang Tua Asuh/Wali"),
-                buildDetailRow("Status Orang Tua Asuh/Wali", "-"),
+                SizedBox(height: 6.h),
+                buildSectionTitle("Laporan"),
+                Text(
+                  "1. Hafalan Baru",
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13.sp,
+                  ),
+                ),
+                SizedBox(height: 6.h),
+                const CustomTable(
+                  headers: ["No", "Hafalan", "Nilai"],
+                  rows: [
+                    ["a.", "Surat Al-Fatihah", "80"],
+                    ["b.", "Surat 2", "80"],
+                    ["c.", "Surat 3", "80"],
+                    ["d.", "Surat 4", "80"],
+                    ["e.", "Surat 5", "80"],
+                  ],
+                ),
+                SizedBox(height: 12.h),
+                Text(
+                  "2. Muraja'ah",
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13.sp,
+                  ),
+                ),
+                SizedBox(height: 6.h),
+                const CustomTable(
+                  headers: ["No", "Hafalan", "Nilai"],
+                  rows: [
+                    ["a.", "Surat Al-Fatihah", "80"],
+                    ["b.", "Surat 2", "80"],
+                    ["c.", "Surat 3", "80"],
+                    ["d.", "Surat 4", "80"],
+                    ["e.", "Surat 5", "80"],
+                  ],
+                ),
               ],
             ),
           );

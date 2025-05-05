@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'utils.dart';
+import 'util.dart';
 import 'package:frontend_hamalatulquran/models/santri_model.dart';
 import 'package:frontend_hamalatulquran/models/login_model.dart';
 import 'package:frontend_hamalatulquran/models/pengajar_model.dart';
 import 'package:frontend_hamalatulquran/models/kelas_model.dart';
 
 class ApiService {
-  final String baseUrl = "http://10.0.2.2:8000/api";
+  static String baseUrl = "http://10.0.2.2:8000/api";
   static const requestTimeout = Duration(seconds: 5);
 
   // 🔥 Refactor fungsi fetch data dari API
@@ -140,6 +140,7 @@ class ApiService {
         headers: {
           "Authorization": "Bearer $token",
           "Content-Type": "application/json",
+          "Accept": "application/json",
         },
       ).timeout(const Duration(seconds: 5));
 
@@ -160,6 +161,9 @@ class ApiService {
         throw Exception(body["message"] ?? "❌ User tidak ditemukan");
       }
     } catch (e) {
+      if (e is http.ClientException) {
+        print("📡 ClientException: ${e.message}");
+      }
       print("🚨 Error: $e");
       return {"error": "Terjadi kesalahan: $e"};
     }
@@ -218,13 +222,15 @@ class ApiService {
 
   Future<int> countSantriAktif() async {
     try {
-    final response = await http.get(Uri.parse('$baseUrl/santri/jumlah-aktif'));
+      final response =
+          await http.get(Uri.parse('$baseUrl/santri/jumlah-aktif'));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data ['jumlah'];
+        return data['jumlah'];
       } else {
-        throw Exception("❌ Gagal fetch data! Status code: ${response.statusCode}");
+        throw Exception(
+            "❌ Gagal fetch data! Status code: ${response.statusCode}");
       }
     } catch (e) {
       throw Exception("❌ Error countSantriAktif: $e");
@@ -251,8 +257,20 @@ class ApiService {
     }
   }
 
+  static Future<int> fetchIdGroupFromTarget(int idSantri) async {
+    final response =
+        await http.get(Uri.parse('$baseUrl/santri/$idSantri/group'));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body)['data'];
+      return data['id_group'];
+    } else {
+      throw Exception('Gagal ambil id_group dari target');
+    }
+  }
+
   // Get Pengajar
-  Future<List<Pengajar>> fetchPengajar() async {
+  static Future<List<Pengajar>> fetchPengajar() async {
     try {
       final response = await http.get(Uri.parse("$baseUrl/pengajar"));
 

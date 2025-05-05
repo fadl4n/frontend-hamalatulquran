@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class GantiPassword extends StatelessWidget {
@@ -8,31 +9,7 @@ class GantiPassword extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green,
-        toolbarHeight: 60.h, // Atur tinggi sesuai kebutuhan
-        title: Text(
-          "Ganti Kata Sandi",
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 18.sp,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        centerTitle: true,
-        leading: SizedBox(
-          width: 60.w,
-          height: 60.h,
-          child: InkWell(
-            onTap: () => Navigator.pop(context),
-            borderRadius: BorderRadius.circular(20.r),
-            child: Center(
-              child: Icon(Icons.arrow_back_ios_new_rounded,
-                  color: Colors.white, size: 20.w),
-            ),
-          ),
-        ),
-      ),
+      appBar: CustomAppbar(title: "Ganti Password", fontSize: 18.sp),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 40.h),
         child: Column(

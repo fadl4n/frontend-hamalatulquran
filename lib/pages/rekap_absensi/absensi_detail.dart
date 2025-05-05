@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
+import 'package:frontend_hamalatulquran/widgets/custom_table.dart';
+import 'package:frontend_hamalatulquran/widgets/header_section.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -53,37 +55,8 @@ class _AbsensiDetailState extends State<AbsensiDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.green.shade800,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Colors.green, Colors.teal],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(15.r),
-            ),
-          ),
-        ),
-        title: Text(
-          "Detail Absensi Kelas ${widget.namaKelas}",
-          style: GoogleFonts.poppins(
-            color: Colors.white,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded,
-              color: Colors.white, size: 20.w),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
+      appBar: CustomAppbar(
+          title: "Absesni Kelas ${widget.namaKelas}", fontSize: 16.sp),
       body: Column(
         children: [
           _headerSection(),
@@ -101,32 +74,9 @@ class _AbsensiDetailState extends State<AbsensiDetail> {
   }
 
   Widget _headerSection() {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 40.h),
-      child: Column(
-        children: [
-          Center(
-            child: Text(
-              widget.namaKelas,
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 20.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          SizedBox(height: 5.h),
-          Center(
-            child: Text(
-              "Jumlah Santri: ${santriList.length} Santri", // bisa dinamis nanti
-              style: GoogleFonts.poppins(
-                color: Colors.white,
-                fontSize: 14.sp,
-              ),
-            ),
-          ),
-        ],
-      ),
+    return HeaderSection(
+      title: widget.namaKelas,
+      jumlahSantri: santriList.length,
     );
   }
 
@@ -168,19 +118,11 @@ class _AbsensiDetailState extends State<AbsensiDetail> {
                       Expanded(
                         child: SingleChildScrollView(
                           scrollDirection: Axis.vertical,
-                          child: Table(
-                            border: TableBorder.all(color: Colors.green),
-                            columnWidths: const {
-                              0: FlexColumnWidth(2),
-                              1: FlexColumnWidth(3),
-                              2: FlexColumnWidth(2),
-                            },
-                            children: [
-                              _tableHeaderRow(),
-                              ...santriList.asMap().entries.map((entry) {
-                                return _santriTableRow(entry.value, entry.key);
-                              }).toList(),
-                            ],
+                          child: CustomTable(
+                            headers: ["NISN", "Nama", getFormattedDate()],
+                            rows: santriList
+                                .map((e) => [e.nisn, e.nama, "-"])
+                                .toList(),
                           ),
                         ),
                       ),
@@ -228,44 +170,6 @@ class _AbsensiDetailState extends State<AbsensiDetail> {
           ),
         ),
       ],
-    );
-  }
-
-  TableRow _tableHeaderRow() {
-    return TableRow(
-      decoration: BoxDecoration(color: Colors.green.shade100),
-      children: [
-        _tableCell("NISN", true),
-        _tableCell("Nama", true),
-        _tableCell(getFormattedDate(), true),
-      ],
-    );
-  }
-
-  TableRow _santriTableRow(Santri santri, int index) {
-    return TableRow(
-      decoration: BoxDecoration(
-        color: index % 2 == 0 ? Colors.green.shade50 : Colors.green.shade100,
-      ),
-      children: [
-        _tableCell(santri.nisn, false),
-        _tableCell(santri.nama, false),
-        _tableCell("-", false), // nanti bisa ganti ke status hadir
-      ],
-    );
-  }
-
-  Widget _tableCell(String text, bool isHeader) {
-    return Padding(
-      padding: EdgeInsets.all(10.r),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: GoogleFonts.poppins(
-          fontSize: 12.sp,
-          fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
-        ),
-      ),
     );
   }
 }
