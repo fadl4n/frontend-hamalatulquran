@@ -51,12 +51,15 @@ class ProfileAvatar extends StatelessWidget {
                       ),
                     ),
                   ),
-                  errorWidget: (context, url, error) => Image.asset(
-                    gender == "Laki-Laki"
-                        ? "assets/ikhwan.png"
-                        : "assets/akhwat.png",
-                    fit: BoxFit.cover,
-                  ),
+                  errorWidget: (context, url, error) {
+                    print("❌ Error load image: $url - $error");
+                    return Image.asset(
+                      gender == "Laki-Laki"
+                          ? "assets/ikhwan.png"
+                          : "assets/akhwat.png",
+                      fit: BoxFit.cover,
+                    );
+                  },
                 )
               : Image.asset(
                   gender == "Laki-Laki"

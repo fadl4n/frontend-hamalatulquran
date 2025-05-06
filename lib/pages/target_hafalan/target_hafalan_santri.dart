@@ -12,8 +12,15 @@ import 'package:google_fonts/google_fonts.dart';
 
 class TargetHafalanSantri extends StatefulWidget {
   final Santri santri;
+  final String idGroup;
+  final Function(String) onIdGroupUpdated;
 
-  const TargetHafalanSantri({super.key, required this.santri});
+  const TargetHafalanSantri({
+    super.key,
+    required this.santri,
+    required this.idGroup,
+    required this.onIdGroupUpdated,
+  });
 
   @override
   State<TargetHafalanSantri> createState() => _TargetHafalanSantriState();
@@ -22,41 +29,25 @@ class TargetHafalanSantri extends StatefulWidget {
 class _TargetHafalanSantriState extends State<TargetHafalanSantri> {
   List<TargetByGroup> targetHafalan = [];
   bool isLoading = true;
-  Future<void> _showInputTargetForm({
-    required String imageUrl,
-    required String gender,
-  }) async {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return InputTargetForm(
-          santri: widget.santri,
-          imageUrl: imageUrl,
-          gender: gender,
-        );
-      },
-    ).then((_){
-      fetchTargetHafalan();
-    });
-  }
+  late String currentIdGroup;
 
   @override
   void initState() {
     super.initState();
+    currentIdGroup = widget.idGroup;
     fetchTargetHafalan();
   }
 
   Future<void> fetchTargetHafalan() async {
     try {
-      // Gunakan widget.idGroup jika sudah tersedia
-      final idGroup = widget.santri.idGroup;
-      if (idGroup == null) {
-        throw Exception('ID Group tidak ditemukan');
-      }
+      setState(() {
+        isLoading = true;
+      });
+
+      // Pastikan currentIdGroup yang terbaru digunakan untuk fetch
+      print("Fetching target for group: $currentIdGroup");
       final result = await TargetService.fetchTargetBySantriGroup(
-        widget.santri.id.toString(),
-        idGroup.toString(),
-      );
+          widget.santri.id.toString(), currentIdGroup);
 
       setState(() {
         targetHafalan = result;
@@ -73,12 +64,37 @@ class _TargetHafalanSantriState extends State<TargetHafalanSantri> {
     }
   }
 
+  Future<void> _showInputTargetForm({
+    required String imageUrl,
+    required String gender,
+  }) async {
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => InputTargetForm(
+        santri: widget.santri,
+        imageUrl: imageUrl,
+        gender: gender,
+      ),
+    );
+
+    if (result != null) {
+      print('Group ID baru: $result');
+      setState(() {
+        currentIdGroup = result; // update ke group baru
+      });
+      widget.onIdGroupUpdated(result);
+      await fetchTargetHafalan(); // fetch ulang pakai group ID baru
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.green.shade800,
       appBar: CustomAppbar(
-          title: "Target Hafalan ${widget.santri.nama}", fontSize: 15.sp),
+        title: "Target Hafalan ${widget.santri.nama}",
+        fontSize: 15.sp,
+      ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
@@ -87,6 +103,16 @@ class _TargetHafalanSantriState extends State<TargetHafalanSantri> {
                 Expanded(child: _listHafalanSection()),
               ],
             ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.green.shade700,
+        onPressed: () async {
+          await _showInputTargetForm(
+            imageUrl: widget.santri.fotoSantri ?? '',
+            gender: widget.santri.jenisKelamin,
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 
@@ -101,42 +127,20 @@ class _TargetHafalanSantriState extends State<TargetHafalanSantri> {
   Widget _listHafalanSection() {
     return ContentSection(
       title: "Target Hafalan",
-      itemCount: targetHafalan.isEmpty
-          ? 1
-          : targetHafalan.length, // Kalau kosong, set itemCount jadi 1
+      itemCount: targetHafalan.isEmpty ? 1 : targetHafalan.length,
       itemBuilder: (context, index) {
-        // Jika targetHafalan kosong, tampilkan pesan
         if (targetHafalan.isEmpty) {
-          // Panggil fetchTargetHafalan sebelum return untuk memastikan data diambil
-          fetchTargetHafalan(); // Ambil data terlebih dahulu, jika perlu.
           return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Belum ada target hafalan 🥲",
-                  style: GoogleFonts.poppins(
-                      fontSize: 14.sp, color: Colors.black87),
-                ),
-                const SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: () async {
-                    // Menampilkan form input target
-                    await _showInputTargetForm(
-                      imageUrl: widget.santri.fotoSantri ?? '',
-                      gender: widget.santri.jenisKelamin,
-                    );
-                    // Setelah dialog ditutup, lakukan refresh data
-                    fetchTargetHafalan();
-                  },
-                  child: const Text("Tambah target baru"),
-                ),
-              ],
+            child: Text(
+              "Belum ada target hafalan 🥲",
+              style: GoogleFonts.poppins(
+                fontSize: 14.sp,
+                color: Colors.black87,
+              ),
             ),
           );
         }
 
-        // Jika tidak kosong, tampilkan item
         final hafalan = targetHafalan[index];
         return GestureDetector(
           onTap: () {
@@ -144,9 +148,10 @@ class _TargetHafalanSantriState extends State<TargetHafalanSantri> {
               context,
               MaterialPageRoute(
                 builder: (context) => HistoryTargetHafalan(
-                    namaSurat: hafalan.namaSurat,
-                    jumlahAyat: hafalan.jumlahAyat,
-                    santri: widget.santri),
+                  namaSurat: hafalan.namaSurat,
+                  jumlahAyat: hafalan.jumlahAyat,
+                  santri: widget.santri,
+                ),
               ),
             );
           },
@@ -161,7 +166,6 @@ class _TargetHafalanSantriState extends State<TargetHafalanSantri> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Kiri: Nama surat dan jumlah ayat
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -179,7 +183,6 @@ class _TargetHafalanSantriState extends State<TargetHafalanSantri> {
                       ),
                     ],
                   ),
-                  // Kanan: Icon panah
                   Icon(
                     Icons.arrow_forward_ios,
                     color: Colors.black54,

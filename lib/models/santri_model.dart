@@ -1,3 +1,5 @@
+import 'package:frontend_hamalatulquran/services/util.dart';
+
 class Santri {
   final int id;
   final String nama;
@@ -12,7 +14,7 @@ class Santri {
   final String jenisKelamin;
   final String email;
   final String status;
-  final int? idGroup;  // Tambahkan idGroup jika diperlukan
+  final int? idGroup;
 
   Santri({
     required this.id,
@@ -28,7 +30,7 @@ class Santri {
     required this.jenisKelamin,
     required this.email,
     required this.status,
-    this.idGroup,  // Tambahkan idGroup pada konstruktor
+    this.idGroup,
   });
 
   factory Santri.fromJson(Map<String, dynamic> json) {
@@ -41,7 +43,7 @@ class Santri {
     String? foto = (json['foto_santri'] != null &&
             json['foto_santri'].toString().isNotEmpty &&
             json['foto_santri'].toString() != "null")
-        ? json['foto_santri']
+        ? Utils.fixLocalhostURL(json['foto_santri'])
         : null; // Biarkan null dulu, nanti di-handle di widget
 
     print("✅ Foto yang dipakai untuk ${json['nama']}: ${foto ?? defaultFoto}");
@@ -60,7 +62,7 @@ class Santri {
       jenisKelamin: isIkhwan ? "Laki-Laki" : "Perempuan",
       email: json['email'],
       status: json['status'].toString(),
-      idGroup: json['id_group'], // Ambil id_group dari API jika ada
+      idGroup: json['id_group'] as int?,
     );
   }
 

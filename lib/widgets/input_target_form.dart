@@ -149,6 +149,7 @@ class _InputTargetFormState extends State<InputTargetForm> {
         'id_santri': widget.santri.id,
         'id_kelas': widget.santri.idKelas, // id_kelas yang dibutuhkan oleh API
         'id_surat': selectedSurat?.id ?? 0,
+        'id_pengajar': selectedPengajar?.id ?? 0,
         'jumlah_ayat_target_awal': ayatAwal,
         'jumlah_ayat_target': ayatAkhir,
         'tgl_mulai': tanggalMulai,
@@ -158,8 +159,9 @@ class _InputTargetFormState extends State<InputTargetForm> {
 
       print("Payload yang akan dikirim: $payload");
 
-      // Panggil createTarget tanpa mencoba mengakses return value-nya
-      await TargetService.createTarget(payload);
+      // setelah berhasil create target:
+      final response = await TargetService.createTarget(payload);
+      final newIdGroup = response['data']['id_group'].toString();
 
       // Debug print untuk memastikan data yang dikirim
       print("=== Data Target Hafalan ===");
@@ -173,18 +175,19 @@ class _InputTargetFormState extends State<InputTargetForm> {
       print("Group Target: $targetGroup");
 
       if (mounted) {
-        Navigator.pop(context);
+        Navigator.pop(
+            context, newIdGroup); // kasih sinyal ke halaman sebelumnya
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Target Hafalan berhasil ditambahkan")),
         );
       }
     } catch (e) {
-      print("Error submitting form: $e");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Gagal: $e")),
         );
       }
+      print("Error submitting form: $e");
     } finally {
       if (mounted) {
         setState(() {
