@@ -12,8 +12,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 class TargetHafalanSantri extends StatefulWidget {
   final Santri santri;
-  final String idGroup;
-  final Function(String) onIdGroupUpdated;
+  final int? idGroup;
+  final Function(int?) onIdGroupUpdated;
 
   const TargetHafalanSantri({
     super.key,
@@ -29,7 +29,7 @@ class TargetHafalanSantri extends StatefulWidget {
 class _TargetHafalanSantriState extends State<TargetHafalanSantri> {
   List<TargetByGroup> targetHafalan = [];
   bool isLoading = true;
-  late String currentIdGroup;
+  late int? currentIdGroup;
 
   @override
   void initState() {
@@ -47,7 +47,7 @@ class _TargetHafalanSantriState extends State<TargetHafalanSantri> {
       // Pastikan currentIdGroup yang terbaru digunakan untuk fetch
       print("Fetching target for group: $currentIdGroup");
       final result = await TargetService.fetchTargetBySantriGroup(
-          widget.santri.id.toString(), currentIdGroup);
+          widget.santri.id.toString(), currentIdGroup?.toString() ?? '0');
 
       setState(() {
         targetHafalan = result;
@@ -72,18 +72,25 @@ class _TargetHafalanSantriState extends State<TargetHafalanSantri> {
       context: context,
       builder: (context) => InputTargetForm(
         santri: widget.santri,
-        imageUrl: imageUrl,
+      imageUrl: imageUrl,
         gender: gender,
       ),
     );
 
     if (result != null) {
-      print('Group ID baru: $result');
-      setState(() {
-        currentIdGroup = result; // update ke group baru
-      });
-      widget.onIdGroupUpdated(result);
-      await fetchTargetHafalan(); // fetch ulang pakai group ID baru
+      final parseId = int.tryParse(result);
+      if (parseId != null) {
+        print('Group ID baru: $parseId');
+        setState(() {
+          currentIdGroup = parseId; // update ke group baru
+        });
+        widget.onIdGroupUpdated(parseId);
+        await fetchTargetHafalan(); // fetch ulang pakai group ID baru
+      } else {
+        print("Parsing ID gagal: result bukan angka");
+      }
+    } else {
+      print("Dialog dibatalakn / result null");
     }
   }
 
@@ -111,7 +118,7 @@ class _TargetHafalanSantriState extends State<TargetHafalanSantri> {
             gender: widget.santri.jenisKelamin,
           );
         },
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, color: Colors.white,),
       ),
     );
   }

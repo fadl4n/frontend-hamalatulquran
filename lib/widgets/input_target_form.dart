@@ -30,7 +30,7 @@ class _InputTargetFormState extends State<InputTargetForm> {
   TextEditingController ayatAkhirController = TextEditingController();
   TextEditingController tanggalMulaiController = TextEditingController();
   TextEditingController tanggalTargetController = TextEditingController();
-  TextEditingController targetGroupController = TextEditingController();
+  TextEditingController idGroupController = TextEditingController();
 
   List<Surat> suratList = [];
   List<Pengajar> pengajarList = [];
@@ -85,7 +85,8 @@ class _InputTargetFormState extends State<InputTargetForm> {
     ayatAkhirController.dispose();
     tanggalMulaiController.dispose();
     tanggalTargetController.dispose();
-    targetGroupController.dispose();
+    idGroupController.dispose();
+
     super.dispose();
   }
 
@@ -105,10 +106,10 @@ class _InputTargetFormState extends State<InputTargetForm> {
     final ayatAkhirText = ayatAkhirController.text.trim();
     final tanggalMulai = tanggalMulaiController.text.trim();
     final tanggalTarget = tanggalTargetController.text.trim();
-    final targetGroupText = targetGroupController.text.trim();
+    final idGroupText = idGroupController.text.trim();
     final ayatAwal = int.tryParse(ayatAwalText);
     final ayatAkhir = int.tryParse(ayatAkhirText);
-    final targetGroup = int.tryParse(targetGroupText);
+    final idGroup = int.tryParse(idGroupText);
 
     // Debug print untuk memeriksa nilai yang diambil
     print("Selected Surat: $selectedSurat");
@@ -118,7 +119,7 @@ class _InputTargetFormState extends State<InputTargetForm> {
     print("Ayat Akhir: $ayatAkhir");
     print("Tanggal Mulai: $tanggalMulai");
     print("Tanggal Target: $tanggalTarget");
-    print("Target Group: $targetGroup");
+    print("Target Group: $idGroup");
 
     if (selectedSurat == null ||
         selectedPengajar == null ||
@@ -126,7 +127,7 @@ class _InputTargetFormState extends State<InputTargetForm> {
         tanggalMulai.isEmpty ||
         tanggalTarget.isEmpty ||
         ayatAkhir == null ||
-        targetGroup == null) {
+        idGroup == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text("Harap lengkapi semua field dengan benar")),
@@ -154,14 +155,10 @@ class _InputTargetFormState extends State<InputTargetForm> {
         'jumlah_ayat_target': ayatAkhir,
         'tgl_mulai': tanggalMulai,
         'tgl_target': tanggalTarget,
-        'id_group': targetGroup,
+        'id_group': idGroup,
       };
 
       print("Payload yang akan dikirim: $payload");
-
-      // setelah berhasil create target:
-      final response = await TargetService.createTarget(payload);
-      final newIdGroup = response['data']['id_group'].toString();
 
       // Debug print untuk memastikan data yang dikirim
       print("=== Data Target Hafalan ===");
@@ -172,14 +169,31 @@ class _InputTargetFormState extends State<InputTargetForm> {
       print("Ayat: $ayatAwal - $ayatAkhir");
       print("Tanggal Mulai: $tanggalMulai");
       print("Tanggal Target: $tanggalTarget");
-      print("Group Target: $targetGroup");
+      print("Id Group Target: $idGroup");
+      // setelah berhasil create target:
+      try {
+        final response = await TargetService.createTarget(payload);
 
-      if (mounted) {
-        Navigator.pop(
-            context, newIdGroup); // kasih sinyal ke halaman sebelumnya
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Target Hafalan berhasil ditambahkan")),
-        );
+        if (response == null || response['data'] == null) {
+          throw Exception("Data tidak ditemukan dalam response API.");
+        }
+
+        final newIdGroup = response['data']['id_group'].toString();
+
+        if (mounted) {
+          Navigator.pop(context, newIdGroup);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text("Target Hafalan berhasil ditambahkan")),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Gagal: $e")),
+          );
+        }
+        print("Error submitting form: $e");
       }
     } catch (e) {
       if (mounted) {
@@ -465,7 +479,7 @@ class _InputTargetFormState extends State<InputTargetForm> {
                         SizedBox(height: 20.h),
                         buildLabel("Group Target"),
                         buildTextField("Contoh: 1",
-                            controller: targetGroupController,
+                            controller: idGroupController,
                             keyboardType: TextInputType.number,
                             validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -530,7 +544,7 @@ class _InputTargetFormState extends State<InputTargetForm> {
                               ),
                             ),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),

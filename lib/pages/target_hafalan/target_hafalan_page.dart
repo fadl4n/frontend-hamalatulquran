@@ -22,8 +22,6 @@ class _TargetHafalanPageState extends State<TargetHafalanPage> {
 
   TextEditingController searchController = TextEditingController();
 
-  String currentIdGroup = 'default';
-
   @override
   void initState() {
     super.initState();
@@ -32,13 +30,6 @@ class _TargetHafalanPageState extends State<TargetHafalanPage> {
       santriListFiltered = listSantri;
       return listSantri;
     });
-  }
-
-  void updateIdGroup(String newIdGroup) {
-    setState(() {
-      currentIdGroup = newIdGroup;
-    });
-    print('Updated idGroup: $currentIdGroup');
   }
 
   void _filterSantri(String keyword) {
@@ -110,12 +101,18 @@ class _TargetHafalanPageState extends State<TargetHafalanPage> {
                             MaterialPageRoute(
                               builder: (context) => TargetHafalanSantri(
                                   santri: santri,
-                                  idGroup: currentIdGroup,
-                                  onIdGroupUpdated: updateIdGroup),
+                                  idGroup: santri.idGroup ?? 0,
+                                  onIdGroupUpdated: (newIdGroup){
+                                    setState(() {
+                                      santri.idGroup = newIdGroup;
+                                    });
+                                  }),
                             ),
                           );
                           if (updatedIdGroup != null) {
-                            updateIdGroup(updatedIdGroup);
+                            setState(() {
+                              santri.idGroup = updatedIdGroup;
+                            });
                           }
                         },
                       );

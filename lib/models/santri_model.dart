@@ -14,7 +14,7 @@ class Santri {
   final String jenisKelamin;
   final String email;
   final String status;
-  final int? idGroup;
+  int? idGroup;
 
   Santri({
     required this.id,
