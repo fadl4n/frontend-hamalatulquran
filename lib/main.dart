@@ -35,14 +35,20 @@ void main() async {
               case '/ganti-pw':
                 return MaterialPageRoute(builder: (_) => const GantiPassword());
               case '/detail-pengajar':
-                final id = settings.arguments as int;
+                final args = settings.arguments as Map<String, dynamic>;
                 return MaterialPageRoute(
-                  builder: (_) => DetailDataPengajar(id: id),
+                  builder: (_) => DetailDataPengajar(
+                    id: args['id'],
+                    nama: args['nama'],
+                  ),
                 );
               case '/detail-santri':
-                final id = settings.arguments as int;
+                final args = settings.arguments as Map<String, dynamic>;
                 return MaterialPageRoute(
-                  builder: (_) => DetailDataSantri(id: id),
+                  builder: (_) => DetailDataSantri(
+                    id: args['id'],
+                    nama: args['nama'],
+                  ),
                 );
               default:
                 return MaterialPageRoute(

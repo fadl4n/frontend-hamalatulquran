@@ -1,11 +1,11 @@
-import 'package:frontend_hamalatulquran/services/util.dart';
+import '../services/utils/util.dart';
 
 class Santri {
   final int id;
   final String nama;
+  final String nisn;
   final String tempatLahir;
   final String tglLahir;
-  final String nisn;
   final String alamat;
   final String? fotoSantri;
   final String angkatan;
@@ -14,14 +14,13 @@ class Santri {
   final String jenisKelamin;
   final String email;
   final String status;
-  int? idGroup;
 
   Santri({
     required this.id,
     required this.nama,
+    required this.nisn,
     required this.tempatLahir,
     required this.tglLahir,
-    required this.nisn,
     required this.alamat,
     this.fotoSantri,
     required this.angkatan,
@@ -30,7 +29,6 @@ class Santri {
     required this.jenisKelamin,
     required this.email,
     required this.status,
-    this.idGroup,
   });
 
   factory Santri.fromJson(Map<String, dynamic> json) {
@@ -62,7 +60,6 @@ class Santri {
       jenisKelamin: isIkhwan ? "Laki-Laki" : "Perempuan",
       email: json['email'],
       status: json['status'].toString(),
-      idGroup: json['id_group'] as int?,
     );
   }
 

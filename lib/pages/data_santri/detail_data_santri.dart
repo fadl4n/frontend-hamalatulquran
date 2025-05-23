@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend_hamalatulquran/repositories/santri_repository.dart';
-import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
-import 'package:frontend_hamalatulquran/widgets/data_detail_shimmer.dart';
-import 'package:frontend_hamalatulquran/widgets/detail_data_layout.dart';
+import 'package:frontend_hamalatulquran/widgets/appbar/custom_appbar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_hamalatulquran/models/santri_model.dart';
+
+import '../../widgets/layout/detail_data_layout.dart';
+import '../../widgets/shimmer/data_detail_shimmer.dart';
 
 class DetailDataSantri extends StatefulWidget {
   final int id;

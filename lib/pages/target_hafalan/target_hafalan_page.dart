@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_hamalatulquran/repositories/santri_repository.dart';
-import 'package:frontend_hamalatulquran/services/search_util.dart';
-import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
-import 'package:frontend_hamalatulquran/widgets/santri_tile.dart';
+import 'package:frontend_hamalatulquran/widgets/appbar/custom_appbar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend_hamalatulquran/pages/target_hafalan/target_hafalan_santri.dart';
 import 'package:frontend_hamalatulquran/models/santri_model.dart';
-import 'package:frontend_hamalatulquran/widgets/search.dart';
+
+import '../../services/utils/search_util.dart';
+import '../../widgets/search/search.dart';
+import '../../widgets/tiles/santri_tile.dart';
 
 class TargetHafalanPage extends StatefulWidget {
   const TargetHafalanPage({super.key});
@@ -96,24 +97,14 @@ class _TargetHafalanPageState extends State<TargetHafalanPage> {
                       return SantriTile(
                         santri: santri,
                         onTap: () async {
-                          final updatedIdGroup = await Navigator.push(
+                          Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => TargetHafalanSantri(
-                                  santri: santri,
-                                  idGroup: santri.idGroup ?? 0,
-                                  onIdGroupUpdated: (newIdGroup){
-                                    setState(() {
-                                      santri.idGroup = newIdGroup;
-                                    });
-                                  }),
+                                santri: santri,
+                              ),
                             ),
                           );
-                          if (updatedIdGroup != null) {
-                            setState(() {
-                              santri.idGroup = updatedIdGroup;
-                            });
-                          }
                         },
                       );
                     },

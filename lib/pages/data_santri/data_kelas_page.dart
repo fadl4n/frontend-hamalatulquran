@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend_hamalatulquran/pages/data_santri/data_santri_page.dart';
 import 'package:frontend_hamalatulquran/repositories/kelas_repository.dart';
-import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
-import 'package:frontend_hamalatulquran/widgets/kelas_tile.dart';
+import 'package:frontend_hamalatulquran/widgets/appbar/custom_appbar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_hamalatulquran/models/kelas_model.dart';
+
+import '../../widgets/tiles/kelas_tile.dart';
 
 class DataKelasPage extends StatefulWidget {
   const DataKelasPage({super.key});

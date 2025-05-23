@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:frontend_hamalatulquran/models/histori_model.dart';
 import 'package:frontend_hamalatulquran/models/santri_model.dart';
+import 'package:frontend_hamalatulquran/models/target_hafalan_model.dart';
 import 'package:frontend_hamalatulquran/repositories/santri_repository.dart';
-import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
-import 'package:frontend_hamalatulquran/widgets/custom_table.dart';
-import 'package:frontend_hamalatulquran/widgets/data_detail_shimmer.dart';
-import 'package:frontend_hamalatulquran/widgets/detail_data_layout.dart';
+import 'package:frontend_hamalatulquran/widgets/appbar/custom_appbar.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../../widgets/layout/detail_data_layout.dart';
+import '../../widgets/shimmer/data_detail_shimmer.dart';
+import '../../widgets/table/custom_table.dart';
 
 class LaporanDetailPage extends StatefulWidget {
   final int id;
@@ -18,12 +21,12 @@ class LaporanDetailPage extends StatefulWidget {
 }
 
 class _LaporanDetailPageState extends State<LaporanDetailPage> {
-  late Future<Santri> _futureSantri;
+  late Future<Map<String, dynamic>> _futureLaporanSantri;
 
   @override
   void initState() {
     super.initState();
-    _futureSantri = SantriRepository.getbyId(widget.id);
+    _futureLaporanSantri = SantriRepository.getLaporanDetail(widget.id);
   }
 
   @override
@@ -32,16 +35,17 @@ class _LaporanDetailPageState extends State<LaporanDetailPage> {
       appBar:
           CustomAppbar(title: "Laporan Detail ${widget.nama}", fontSize: 16),
       body: FutureBuilder(
-        future: _futureSantri,
+        future: _futureLaporanSantri,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const DataDetailShimmer();
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
-          final santri = snapshot.data!;
-          final nama = santri.nama;
-          final nisn = santri.nisn;
+          final data = snapshot.data!;
+          final santri = data['santri'] as Santri;
+          final targets = data['targets'] as List<TargetHafalan>;
+          final murojaah = data['murojaah'] as List<Histori>;
           final santriPict = (santri.fotoSantri?.isNotEmpty ?? false)
               ? santri.fotoSantri!
               : "https://via.placeholder.com/150";
@@ -53,8 +57,8 @@ class _LaporanDetailPageState extends State<LaporanDetailPage> {
             detailContent: Column(
               children: [
                 buildSectionTitle("Data Pribadi"),
-                buildDetailRow("Nama", nama),
-                buildDetailRow("NISN", nisn),
+                buildDetailRow("Nama", santri.nama),
+                buildDetailRow("NISN", santri.nisn),
                 buildDetailRow("Tempat, tanggal lahir",
                     "${santri.tempatLahir}, ${santri.tglLahir}"),
                 buildDetailRow("Jenis Kelamin", santri.jenisKelamin),
@@ -69,15 +73,16 @@ class _LaporanDetailPageState extends State<LaporanDetailPage> {
                   ),
                 ),
                 SizedBox(height: 6.h),
-                const CustomTable(
+                CustomTable(
                   headers: ["No", "Hafalan", "Nilai"],
-                  rows: [
-                    ["a.", "Surat Al-Fatihah", "80"],
-                    ["b.", "Surat 2", "80"],
-                    ["c.", "Surat 3", "80"],
-                    ["d.", "Surat 4", "80"],
-                    ["e.", "Surat 5", "80"],
-                  ],
+                  rows: List.generate(targets.length, (index) {
+                    final target = targets[index];
+                    return [
+                      "${index + 1}",
+                      target.namaSurat,
+                      target.nilai.toString(),
+                    ];
+                  }),
                 ),
                 SizedBox(height: 12.h),
                 Text(
@@ -88,15 +93,16 @@ class _LaporanDetailPageState extends State<LaporanDetailPage> {
                   ),
                 ),
                 SizedBox(height: 6.h),
-                const CustomTable(
+                CustomTable(
                   headers: ["No", "Hafalan", "Nilai"],
-                  rows: [
-                    ["a.", "Surat Al-Fatihah", "80"],
-                    ["b.", "Surat 2", "80"],
-                    ["c.", "Surat 3", "80"],
-                    ["d.", "Surat 4", "80"],
-                    ["e.", "Surat 5", "80"],
-                  ],
+                  rows: List.generate(murojaah.length, (index) {
+                    final item = murojaah[index];
+                    return [
+                      "${index + 1}",
+                      item.namaSurat,
+                      item.nilai.toString(),
+                    ];
+                  }),
                 ),
               ],
             ),

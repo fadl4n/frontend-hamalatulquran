@@ -3,10 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend_hamalatulquran/models/santri_model.dart';
 import 'package:frontend_hamalatulquran/pages/evaluasi_murojaah/evaluasi_list_surat.dart';
 import 'package:frontend_hamalatulquran/repositories/santri_repository.dart';
-import 'package:frontend_hamalatulquran/services/search_util.dart';
-import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
-import 'package:frontend_hamalatulquran/widgets/santri_tile.dart';
-import 'package:frontend_hamalatulquran/widgets/search.dart';
+import 'package:frontend_hamalatulquran/widgets/appbar/custom_appbar.dart';
+
+import '../../services/utils/search_util.dart';
+import '../../widgets/search/search.dart';
+import '../../widgets/tiles/santri_tile.dart';
 
 class EvaluasiListSantri extends StatefulWidget {
   const EvaluasiListSantri({super.key});

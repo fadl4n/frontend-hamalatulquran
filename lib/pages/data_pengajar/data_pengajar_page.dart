@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend_hamalatulquran/pages/data_pengajar/detail_data_pengajar.dart';
-import 'package:frontend_hamalatulquran/services/api_service.dart';
-import 'package:frontend_hamalatulquran/services/search_util.dart';
-import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
-import 'package:frontend_hamalatulquran/widgets/pengajar_tile.dart';
+import 'package:frontend_hamalatulquran/widgets/appbar/custom_appbar.dart';
 import 'package:frontend_hamalatulquran/models/pengajar_model.dart';
-import 'package:frontend_hamalatulquran/widgets/search.dart';
+
+import '../../services/api/api_service.dart';
+import '../../services/utils/search_util.dart';
+import '../../widgets/search/search.dart';
+import '../../widgets/tiles/pengajar_tile.dart';
 
 class DataPengajarPage extends StatefulWidget {
   const DataPengajarPage({super.key});

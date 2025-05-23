@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../widgets/appbar/custom_appbar.dart';
 
 class GantiPassword extends StatelessWidget {
   const GantiPassword({super.key});

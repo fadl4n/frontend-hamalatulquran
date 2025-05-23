@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_hamalatulquran/repositories/santri_repository.dart';
-import 'package:frontend_hamalatulquran/services/search_util.dart';
-import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
-import 'package:frontend_hamalatulquran/widgets/santri_tile.dart';
+import 'package:frontend_hamalatulquran/widgets/appbar/custom_appbar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend_hamalatulquran/pages/data_santri/detail_data_santri.dart';
 import 'package:frontend_hamalatulquran/models/santri_model.dart';
-import 'package:frontend_hamalatulquran/widgets/search.dart';
+
+import '../../services/utils/search_util.dart';
+import '../../widgets/search/search.dart';
+import '../../widgets/tiles/santri_tile.dart';
 
 class DataSantriPage extends StatefulWidget {
   final int id;

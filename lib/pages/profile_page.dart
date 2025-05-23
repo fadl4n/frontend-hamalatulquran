@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
-import 'package:frontend_hamalatulquran/widgets/data_detail_shimmer.dart';
-import 'package:frontend_hamalatulquran/widgets/profile_shimmer.dart';
+import 'package:frontend_hamalatulquran/models/user_profile.dart';
+import 'package:frontend_hamalatulquran/widgets/appbar/custom_appbar.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:frontend_hamalatulquran/services/api_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../services/api/api_service.dart';
+import '../services/auth/auth_service.dart';
+import '../services/utils/util.dart';
+import '../widgets/shimmer/data_detail_shimmer.dart';
+import '../widgets/shimmer/profile_shimmer.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -15,9 +18,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  Future<Map<String, dynamic>>? _profileFuture;
-  bool isPengajar = false;
-  bool isSantri = false;
+  Future<ProfileModel>? _profileFuture;
+  String? rawFotoProfil;
 
   @override
   void initState() {
@@ -38,9 +40,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _handleLogout() async {
-    await ApiService().logout(); // Panggil logout dari ApiService
+    await AuthService().logout();
 
-    // Setelah logout, pindah ke halaman login
     if (context.mounted) {
       Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
     }
@@ -52,34 +53,61 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: CustomAppbar(title: "Profile Anda", fontSize: 18.sp),
       body: RefreshIndicator(
         onRefresh: refreshProfile,
-        child: FutureBuilder<Map<String, dynamic>>(
+        child: FutureBuilder<ProfileModel>(
           future: _profileFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const ProfileShimmer();
-            } else if (snapshot.hasError ||
-                snapshot.data == null ||
-                snapshot.data!.containsKey("error")) {
+            } else if (snapshot.hasError || snapshot.data == null) {
               return Center(
-                child: Text(
-                  snapshot.data?["error"] ?? "Gagal memuat data",
-                  style: const TextStyle(color: Colors.red),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      snapshot.error?.toString() ?? "Gagal memuat data",
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => setState(() {
+                        _profileFuture = ApiService().getProfile();
+                      }),
+                      child: const Text("Coba Lagi"),
+                    ),
+                  ],
                 ),
               );
             }
 
             final profile = snapshot.data!;
-            final nama = profile['nama'] ?? 'Tidak ada Nama';
-            final identifier =
-                profile['nip'] ?? profile['nisn'] ?? 'Tidak ada NIP/NISN';
-            final profilePict =
-                profile['foto_profil'] ?? "https://via.placeholder.com/150";
+            final nama = profile.nama;
+            final identifier = profile.nip ?? profile.nisn ?? '';
+            rawFotoProfil = profile.fotoProfil;
+            final userRole =
+                profile.role;
+            final userGender =
+                (profile.jenisKelamin == 2 || profile.jenisKelamin == "2")
+                    ? "Perempuan"
+                    : "Laki-laki";
 
-            // Tentukan apakah pengguna adalah Pengajar atau Santri
-            isPengajar = profile['nip'] != null;
-            isSantri = profile['nisn'] != null;
+            final isPengajar = profile.nip != null;
+            final isSantri = profile.nisn != null;
 
-            print("📸 Profile Data: $profile");
+            // Fix URL foto profil biar bisa diakses (contoh localhost emulator)
+            String profilePict = "";
+            if (rawFotoProfil != null && rawFotoProfil!.isNotEmpty) {
+              profilePict = Utils.fixLocalhostURL(rawFotoProfil!);
+            }
+
+            // Kalau gak ada foto, pake default sesuai role + gender
+            if (profilePict.isEmpty) {
+              profilePict =
+                  ""; // kosong biar kita pakai Image.asset di errorWidget
+            }
+
+            debugPrint("📸 Profile Data: $profile");
+            debugPrint("🔗 Profile Image URL after fix: $profilePict");
+            debugPrint("🧑 Role: $userRole, Gender: $userGender");
 
             return Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -113,19 +141,32 @@ class _ProfilePageState extends State<ProfilePage> {
                               radius: 55.r,
                               backgroundColor: Colors.transparent,
                               child: ClipOval(
-                                child: CachedNetworkImage(
-                                  imageUrl: profilePict,
-                                  width: 110.r,
-                                  height: 110.r,
-                                  fit: BoxFit.cover,
-                                  placeholder: (context, url) =>
-                                      const DataDetailShimmer(),
-                                  errorWidget: (context, url, error) =>
-                                      Image.asset(
-                                    "assets/user.png",
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
+                                child: profilePict.isNotEmpty
+                                    ? CachedNetworkImage(
+                                        imageUrl: profilePict,
+                                        width: 110.r,
+                                        height: 110.r,
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) =>
+                                            const DataDetailShimmer(),
+                                        errorWidget: (context, url, error) {
+                                          // fallback ke asset default sesuai role & gender
+                                          final fallback = ApiService
+                                              .getDefaultAssetByRoleGender(
+                                                  userRole, userGender);
+                                          return Image.asset(
+                                            fallback,
+                                            fit: BoxFit.cover,
+                                          );
+                                        },
+                                      )
+                                    : Image.asset(
+                                        ApiService.getDefaultAssetByRoleGender(
+                                            userRole, userGender),
+                                        fit: BoxFit.cover,
+                                        width: 110.r,
+                                        height: 110.r,
+                                      ),
                               ),
                             ),
                             Positioned(
@@ -187,7 +228,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // Menampilkan menu sesuai dengan status login
                         if (isPengajar) ...[
                           _buildMenuItem(
                             context,
@@ -195,11 +235,14 @@ class _ProfilePageState extends State<ProfilePage> {
                             "Data Pengajar",
                             onTap: () {
                               print(
-                                  "Navigating to /detail-pengajar with ID: ${profile['id']}");
+                                  "Navigating to /detail-pengajar with ID: ${profile.id}");
                               Navigator.pushNamed(
                                 context,
                                 '/detail-pengajar',
-                                arguments: profile['id'],
+                                arguments: {
+                                  'id': profile.id,
+                                  'nama': profile.nama,
+                                },
                               );
                             },
                           ),
@@ -210,11 +253,14 @@ class _ProfilePageState extends State<ProfilePage> {
                             "Data Santri",
                             onTap: () {
                               print(
-                                  "Navigating to /detail-santri with ID: ${profile['id']}");
+                                  "Navigating to /detail-santri with ID: ${profile.id}");
                               Navigator.pushNamed(
                                 context,
                                 '/detail-santri',
-                                arguments: profile['id'],
+                                arguments: {
+                                  'id': profile.id,
+                                  'nama': profile.nama,
+                                },
                               );
                             },
                           ),
@@ -251,24 +297,23 @@ class _ProfilePageState extends State<ProfilePage> {
               if (title == "Keluar") {
                 _showExitDialog(context);
               } else if (title == "Ganti Kata Sandi") {
-                Navigator.pushNamed(context, '/ganti-pw');
+                // Navigate to change password page
+                Navigator.pushNamed(context, "/change-password");
               }
             },
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 16.w),
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 15.h),
           child: Row(
             children: [
-              Icon(icon, size: 22.w, color: Colors.black54),
-              SizedBox(width: 12.w),
-              Expanded(
-                child: Text(
-                  title,
-                  style: GoogleFonts.poppins(
-                      fontSize: 12.sp, fontWeight: FontWeight.w500),
+              Icon(icon, color: Colors.green, size: 24.w),
+              SizedBox(width: 15.w),
+              Text(
+                title,
+                style: GoogleFonts.poppins(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w500,
                 ),
-              ),
-              Icon(Icons.arrow_forward_ios_rounded,
-                  size: 16.w, color: Colors.black54),
+              )
             ],
           ),
         ),
@@ -279,30 +324,21 @@ class _ProfilePageState extends State<ProfilePage> {
   void _showExitDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (context) {
         return AlertDialog(
-          title: Text("Keluar Aplikasi",
-              style: GoogleFonts.poppins(
-                  fontSize: 16.sp, fontWeight: FontWeight.bold)),
-          content: Text("Apakah Anda yakin ingin keluar?",
-              style: GoogleFonts.poppins(fontSize: 14.sp)),
+          title: const Text("Konfirmasi"),
+          content: const Text("Apakah Anda yakin ingin keluar?"),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context), // ✅ Tutup dialog
-              child: Text("Batal",
-                  style: GoogleFonts.poppins(
-                      fontSize: 14.sp, fontWeight: FontWeight.w500)),
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Batal"),
             ),
-            TextButton(
-              onPressed: () async {
-                Navigator.pop(context); // ✅ Tutup dialog dulu
-                await _handleLogout();
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _handleLogout();
               },
-              child: Text("Keluar",
-                  style: GoogleFonts.poppins(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.red)),
+              child: const Text("Keluar"),
             ),
           ],
         );

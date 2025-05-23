@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
-import 'package:frontend_hamalatulquran/widgets/custom_table.dart';
-import 'package:frontend_hamalatulquran/widgets/header_section.dart';
+import 'package:frontend_hamalatulquran/widgets/appbar/custom_appbar.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend_hamalatulquran/models/santri_model.dart';
-import 'package:frontend_hamalatulquran/services/api_service.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../../services/api/api_service.dart';
+import '../../widgets/layout/header_section.dart';
+import '../../widgets/table/custom_table.dart';
 
 class AbsensiDetail extends StatefulWidget {
   final int id;
@@ -59,7 +60,10 @@ class _AbsensiDetailState extends State<AbsensiDetail> {
           title: "Absesni Kelas ${widget.namaKelas}", fontSize: 16.sp),
       body: Column(
         children: [
-          _headerSection(),
+          HeaderSection(
+            title: widget.namaKelas,
+            jumlahSantri: santriList.length,
+          ),
           Expanded(child: _absensiSection()),
         ],
       ),
@@ -70,13 +74,6 @@ class _AbsensiDetailState extends State<AbsensiDetail> {
         backgroundColor: Colors.green,
         child: Icon(Icons.add, size: 28.w),
       ),
-    );
-  }
-
-  Widget _headerSection() {
-    return HeaderSection(
-      title: widget.namaKelas,
-      jumlahSantri: santriList.length,
     );
   }
 

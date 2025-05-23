@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_hamalatulquran/models/santri_model.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:frontend_hamalatulquran/services/api_service.dart';
 import '../screens/home_bg.dart';
-import '../widgets/menu_grid.dart';
-import 'package:frontend_hamalatulquran/widgets/profile_icon.dart';
+import '../services/api/api_service.dart';
+import '../widgets/grid/menu_grid.dart';
+import '../widgets/profile_components/profile_icon.dart';
 
 class HomePage extends StatefulWidget {
   final bool isPengajar;
+  final Santri? santri;
 
-  const HomePage({super.key, required this.isPengajar});
+  const HomePage({super.key, required this.isPengajar, this.santri});
 
   @override
   State<HomePage> createState() => HomePageState();
@@ -68,7 +70,7 @@ class HomePageState extends State<HomePage> {
                 children: [
                   MenuGrid(
                       key: ValueKey(widget.isPengajar),
-                      isPengajar: widget.isPengajar),
+                      isPengajar: widget.isPengajar, santri: widget.santri,),
                   SizedBox(height: 20.h),
                   _buildSantriAktifCard(),
                   SizedBox(height: 10.h),

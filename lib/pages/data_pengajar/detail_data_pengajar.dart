@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend_hamalatulquran/models/pengajar_model.dart';
-import 'package:frontend_hamalatulquran/widgets/custom_appbar.dart';
-import 'package:frontend_hamalatulquran/widgets/data_detail_shimmer.dart';
-import 'package:frontend_hamalatulquran/widgets/detail_data_layout.dart';
+import 'package:frontend_hamalatulquran/widgets/appbar/custom_appbar.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:frontend_hamalatulquran/services/api_service.dart';
+
+import '../../services/api/api_service.dart';
+import '../../widgets/layout/detail_data_layout.dart';
+import '../../widgets/shimmer/data_detail_shimmer.dart';
 
 class DetailDataPengajar extends StatefulWidget {
   final int id;

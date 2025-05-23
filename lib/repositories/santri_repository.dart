@@ -1,5 +1,6 @@
 import 'package:frontend_hamalatulquran/models/santri_model.dart';
-import 'package:frontend_hamalatulquran/services/api_service.dart';
+
+import '../services/api/api_service.dart';
 
 class SantriRepository {
   static Future<List<Santri>> getAll() async {
@@ -7,7 +8,11 @@ class SantriRepository {
   }
 
   static Future<Santri> getbyId(int id) async {
-    return await ApiService().fetchSantribyId(id);
+    return await ApiService.fetchSantribyId(id);
+  }
+
+  static Future<Map<String, dynamic>> getLaporanDetail(int id) async {
+    return await ApiService.getLaporanDetail(id);
   }
 
   static Future<List<Santri>> getbyKelasId(int idKelas) async {
