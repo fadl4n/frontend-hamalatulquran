@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:frontend_hamalatulquran/models/user_profile.dart';
+import 'package:frontend_hamalatulquran/services/env.dart';
 import 'package:frontend_hamalatulquran/widgets/appbar/custom_appbar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../services/api/api_service.dart';
 import '../services/auth/auth_service.dart';
-import '../services/utils/util.dart';
 import '../widgets/shimmer/data_detail_shimmer.dart';
 import '../widgets/shimmer/profile_shimmer.dart';
 
@@ -96,7 +96,7 @@ class _ProfilePageState extends State<ProfilePage> {
             // Fix URL foto profil biar bisa diakses (contoh localhost emulator)
             String profilePict = "";
             if (rawFotoProfil != null && rawFotoProfil!.isNotEmpty) {
-              profilePict = Utils.fixLocalhostURL(rawFotoProfil!);
+              profilePict = Environment.buildImageUrl(rawFotoProfil!);
             }
 
             // Kalau gak ada foto, pake default sesuai role + gender

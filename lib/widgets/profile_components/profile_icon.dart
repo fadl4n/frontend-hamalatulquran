@@ -7,7 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../services/api/api_service.dart';
-import '../../services/utils/util.dart';
+import '../../services/env.dart';
 
 class ProfileIcon extends StatefulWidget {
   const ProfileIcon({super.key});
@@ -46,7 +46,7 @@ class _ProfileIconState extends State<ProfileIcon> {
           (userMap["jenis_kelamin"] == 2) ? "Perempuan" : "Laki-laki";
 
       if (fotoProfil != null && fotoProfil.isNotEmpty) {
-        final fixedUrl = Utils.fixLocalhostURL(fotoProfil);
+        final fixedUrl = Environment.buildImageUrl(fotoProfil);
         final isNet = fixedUrl.startsWith("http");
 
         // Update state supaya UI rebuild dengan data terbaru

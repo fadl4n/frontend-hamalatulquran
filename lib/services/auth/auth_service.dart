@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:frontend_hamalatulquran/models/user_model.dart';
+import 'package:frontend_hamalatulquran/services/env.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  static String baseUrl = "http://10.0.2.2:8000/api";
-  static const requestTimeout = Duration(seconds: 5);
+  static String baseUrl = Environment.baseUrl;
+  static const requestTimeout = Environment.requestTimeout;
 
   Future<Map<String, dynamic>> _fetchPost(Uri url,
       {Map<String, String>? headers, Map<String, dynamic>? body}) async {

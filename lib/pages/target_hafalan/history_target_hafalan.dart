@@ -22,6 +22,8 @@ class HistoryTargetHafalan extends StatefulWidget {
   final String targetAyat;
   final int ayatTargetAkhir;
 
+  final bool hideFAB;
+
   const HistoryTargetHafalan({
     super.key,
     required this.santri,
@@ -31,6 +33,7 @@ class HistoryTargetHafalan extends StatefulWidget {
     required this.jumlahAyat,
     required this.targetAyat,
     required this.ayatTargetAkhir,
+    this.hideFAB = false,
   });
 
   @override
@@ -111,16 +114,18 @@ class _HistoryTargetHafalanState extends State<HistoryTargetHafalan> {
             Expanded(child: _historySection()),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            await _showInputHafalanForm(
-              imageUrl: widget.santri.fotoSantri ?? '',
-              gender: widget.santri.jenisKelamin,
-            );
-          },
-          backgroundColor: Colors.green,
-          child: const Icon(Icons.add, color: Colors.white),
-        ),
+        floatingActionButton: widget.hideFAB
+            ? null // ini bakal ngilangin FAB kalo true
+            : FloatingActionButton(
+                onPressed: () async {
+                  await _showInputHafalanForm(
+                    imageUrl: widget.santri.fotoSantri ?? '',
+                    gender: widget.santri.jenisKelamin,
+                  );
+                },
+                backgroundColor: Colors.green,
+                child: const Icon(Icons.add, color: Colors.white),
+              ),
       ),
     );
   }

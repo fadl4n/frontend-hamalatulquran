@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:frontend_hamalatulquran/services/env.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend_hamalatulquran/models/target_hafalan_model.dart';
 
 import '../api/api_exception.dart';
 
 class TargetService {
-  static String baseUrl = "http://10.0.2.2:8000/api";
+  static String baseUrl = Environment.baseUrl;
 
   Future<List<TargetHafalan>> fetchAllTarget() async {
     final response = await http.get(Uri.parse('$baseUrl/target'));

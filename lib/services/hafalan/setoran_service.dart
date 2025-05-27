@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'package:frontend_hamalatulquran/models/setoran_model.dart';
+import 'package:frontend_hamalatulquran/services/env.dart';
 import 'package:http/http.dart' as http;
-
 import '../api/api_exception.dart';
 
 class SetoranService {
-  static const String _baseUrl = 'http://10.0.2.2:8000/api/setoran';
+  static String baseUrl = Environment.baseUrl;
 
   static Future<List<Setoran>> getSetoranSantriByTarget(
       int idSantri, int idTarget) async {
-    final url = Uri.parse('$_baseUrl/target-santri/$idSantri-$idTarget');
+    final url = Uri.parse('$baseUrl/setoran/target-santri/$idSantri-$idTarget');
 
     try {
       final response = await http.get(url).timeout(const Duration(seconds: 10));
@@ -38,7 +38,7 @@ class SetoranService {
     try {
       final response = await http
           .post(
-            Uri.parse(_baseUrl),
+            Uri.parse('$baseUrl/setoran'),
             headers: {"Content-Type": "application/json"},
             body: jsonEncode(data),
           )

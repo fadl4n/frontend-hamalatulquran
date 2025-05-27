@@ -167,6 +167,7 @@ class _ManajemenHafalanPageState extends State<ManajemenHafalanPage> {
                     targetAyat: '${hafalan.ayatAwal} - ${hafalan.ayatAkhir}',
                     ayatTargetAkhir: hafalan.ayatAkhir,
                     santri: widget.santri,
+                    hideFAB: true,
                   ),
                 ),
               );

@@ -9,11 +9,11 @@ import 'package:frontend_hamalatulquran/models/santri_model.dart';
 import 'package:frontend_hamalatulquran/models/pengajar_model.dart';
 import 'package:frontend_hamalatulquran/models/kelas_model.dart';
 
-import '../utils/util.dart';
+import '../env.dart';
 
 class ApiService {
-  static String baseUrl = "http://10.0.2.2:8000/api";
-  static const requestTimeout = Duration(seconds: 5);
+  static String baseUrl = Environment.baseUrl;
+  static const requestTimeout = Environment.requestTimeout;
 
   static String getDefaultAssetByRoleGender(String role, String gender) {
     if (role == "pengajar") {
@@ -32,10 +32,10 @@ class ApiService {
     final List<String>? userData = prefs.getStringList("user_data");
 
     String role = userData?.elementAtOrNull(1) ?? "pengajar";
-    String? url = userData?.elementAtOrNull(2);
     String gender = userData?.elementAtOrNull(3) ?? "Laki-laki";
+    String url = userData?.elementAtOrNull(2) ?? getDefaultAssetByRoleGender(role, gender);
 
-    String fixedUrl = Utils.fixLocalhostURL(url);
+    String fixedUrl = Environment.buildImageUrl(url);
 
     if (fixedUrl.isEmpty || fixedUrl == "null") {
       return getDefaultAssetByRoleGender(role, gender);
@@ -87,7 +87,7 @@ class ApiService {
         final fotoProfilRaw = profileData["foto_profil"];
         profileData["foto_profil"] =
             (fotoProfilRaw != null && fotoProfilRaw is String)
-                ? Utils.fixLocalhostURL(fotoProfilRaw)
+                ? Environment.buildImageUrl(fotoProfilRaw)
                 : "";
 
         return ProfileModel.fromJson(profileData);
@@ -118,7 +118,7 @@ class ApiService {
 
         return data.map((json) {
           json['foto_santri'] =
-              Utils.fixLocalhostURL(json['foto_santri']); // Fix URL
+              Environment.buildImageUrl(json['foto_santri']); // Fix URL
           return Santri.fromJson(json);
         }).toList();
       } else {
@@ -145,7 +145,7 @@ class ApiService {
           throw Exception("Data santri tidak ditemukan.");
         }
 
-        data['foto_santri'] = Utils.fixLocalhostURL(data['foto_santri']);
+        data['foto_santri'] = Environment.buildImageUrl(data['foto_santri']);
         return Santri.fromJson(data);
       } else {
         throw Exception(
@@ -238,7 +238,7 @@ class ApiService {
 
         return data.map((json) {
           json['foto_pengajar'] =
-              Utils.fixLocalhostURL(json['foto_pengajar']); // Fix URL
+              Environment.buildImageUrl(json['foto_pengajar']); // Fix URL
           return Pengajar.fromJson(json);
         }).toList();
       } else {
@@ -263,7 +263,7 @@ class ApiService {
           throw Exception("Data Pengajar tidak ditemukan.");
         }
 
-        data['foto_pengajar'] = Utils.fixLocalhostURL(data['foto_pengajar']);
+        data['foto_pengajar'] = Environment.buildImageUrl(data['foto_pengajar']);
         return Pengajar.fromJson(data);
       } else {
         throw Exception(

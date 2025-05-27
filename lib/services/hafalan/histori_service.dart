@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'package:frontend_hamalatulquran/models/histori_model.dart';
 import 'package:http/http.dart' as http;
+import '../env.dart';
 
 class HistoriService {
-  static const String _baseUrl = 'http://10.0.2.2:8000/api/histori';
+  static String baseUrl = Environment.baseUrl;
 
   static Future<List<Histori>> fetchHistoriBySantri(int idSantri) async {
-    final url = Uri.parse('$_baseUrl/santri/$idSantri');
+    final url = Uri.parse('$baseUrl/histori/santri/$idSantri');
 
     try {
       final response = await http.get(url);
@@ -27,7 +28,7 @@ class HistoriService {
 
   Future<bool> updateNilaiMurojaah(int idHistori, int nilai,
       {int? nilaiRemedial}) async {
-    final url = Uri.parse('$_baseUrl/input-nilai/$idHistori');
+    final url = Uri.parse('$baseUrl/histori/input-nilai/$idHistori');
 
     final body = {
       'nilai': nilai,
