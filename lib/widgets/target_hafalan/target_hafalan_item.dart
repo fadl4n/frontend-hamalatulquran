@@ -11,6 +11,7 @@ class TargetHafalanItem extends StatelessWidget {
   final VoidCallback? onTap;
   final Function(BuildContext)? onEdit;
   final Function(BuildContext)? onDelete;
+  final bool isDisable;
 
   const TargetHafalanItem({
     super.key,
@@ -18,6 +19,7 @@ class TargetHafalanItem extends StatelessWidget {
     this.onTap,
     this.onEdit,
     this.onDelete,
+    this.isDisable = false,
   });
   @override
   Widget build(BuildContext context) {
@@ -30,62 +32,65 @@ class TargetHafalanItem extends StatelessWidget {
 
     Widget content = GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
-        decoration: BoxDecoration(
-          color: Colors.green.shade50,
-          borderRadius: BorderRadius.circular(12.r),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  hafalan.namaSurat,
-                  style: GoogleFonts.poppins(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.bold,
+      child: Opacity(
+        opacity: isDisable ? 0.5 : 1.0,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+          decoration: BoxDecoration(
+            color: Colors.green.shade50,
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    hafalan.namaSurat,
+                    style: GoogleFonts.poppins(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                SizedBox(height: 4.h),
-                Text(
-                  "Jumlah target ayat: ${hafalan.jumlahAyat}",
-                  style: GoogleFonts.poppins(fontSize: 14.sp),
-                ),
-                SizedBox(height: 4.h),
-                Text(
-                  "Target Selesai: ${formatTanggal(hafalan.tglTarget)}",
-                  style: GoogleFonts.poppins(fontSize: 12.sp),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                SizedBox(
-                  width: 80.w,
-                  child: CircularPercentIndicator(
-                    radius: 40.0,
-                    lineWidth: 10.0,
-                    percent: persentaseValue / 100,
-                    center: Text("${hafalan.persentase}%",
-                        style:
-                            GoogleFonts.poppins(fontWeight: FontWeight.bold)),
-                    progressColor: percentColor,
-                    backgroundColor: Colors.grey.shade300,
-                    animation: true,
+                  SizedBox(height: 4.h),
+                  Text(
+                    "Jumlah target ayat: ${hafalan.jumlahAyat}",
+                    style: GoogleFonts.poppins(fontSize: 14.sp),
                   ),
-                ),
-                SizedBox(width: 8.w),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  color: Colors.black54,
-                  size: 18.w,
-                ),
-              ],
-            ),
-          ],
+                  SizedBox(height: 4.h),
+                  Text(
+                    "Target Selesai: ${formatTanggal(hafalan.tglTarget)}",
+                    style: GoogleFonts.poppins(fontSize: 12.sp),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  SizedBox(
+                    width: 80.w,
+                    child: CircularPercentIndicator(
+                      radius: 40.0,
+                      lineWidth: 10.0,
+                      percent: persentaseValue / 100,
+                      center: Text("${hafalan.persentase}%",
+                          style:
+                              GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+                      progressColor: percentColor,
+                      backgroundColor: Colors.grey.shade300,
+                      animation: true,
+                    ),
+                  ),
+                  SizedBox(width: 8.w),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.black54,
+                    size: 18.w,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -24,4 +24,28 @@ class HistoriService {
       return [];
     }
   }
+
+  Future<bool> updateNilaiMurojaah(int idHistori, int nilai,
+      {int? nilaiRemedial}) async {
+    final url = Uri.parse('$_baseUrl/input-nilai/$idHistori');
+
+    final body = {
+      'nilai': nilai,
+      if (nilaiRemedial != null) 'nilai_remedial': nilaiRemedial,
+    };
+
+    final response = await http.put(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print(data['message']); // Bisa juga ditampilin di UI
+      return true;
+    } else {
+      throw Exception('Failed to update nilai');
+    }
+  }
 }

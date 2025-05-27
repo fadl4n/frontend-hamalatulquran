@@ -32,7 +32,7 @@ void main() async {
                 return MaterialPageRoute(builder: (_) => const LoginPage());
               case '/profile':
                 return MaterialPageRoute(builder: (_) => const ProfilePage());
-              case '/ganti-pw':
+              case '/change-password':
                 return MaterialPageRoute(builder: (_) => const GantiPassword());
               case '/detail-pengajar':
                 final args = settings.arguments as Map<String, dynamic>;

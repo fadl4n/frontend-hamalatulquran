@@ -93,6 +93,7 @@ class _TargetHafalanSantriState extends State<TargetHafalanSantri> {
           return Center(
             child: Text(
               "Belum ada target hafalan 🥲",
+              textAlign: TextAlign.center,
               style: GoogleFonts.poppins(
                 fontSize: 14.sp,
                 color: Colors.black87,

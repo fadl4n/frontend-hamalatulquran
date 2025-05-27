@@ -74,7 +74,7 @@ class _LaporanDetailPageState extends State<LaporanDetailPage> {
                 ),
                 SizedBox(height: 6.h),
                 CustomTable(
-                  headers: ["No", "Hafalan", "Nilai"],
+                  headers: const ["No", "Hafalan", "Nilai"],
                   rows: List.generate(targets.length, (index) {
                     final target = targets[index];
                     return [
@@ -94,13 +94,17 @@ class _LaporanDetailPageState extends State<LaporanDetailPage> {
                 ),
                 SizedBox(height: 6.h),
                 CustomTable(
-                  headers: ["No", "Hafalan", "Nilai"],
+                  headers: const ["No", "Hafalan", "Nilai"],
                   rows: List.generate(murojaah.length, (index) {
                     final item = murojaah[index];
+                    final nilai =
+                        (item.nilaiRemed != null && item.nilaiRemed != 0)
+                            ? item.nilaiRemed.toString()
+                            : item.nilai.toString();
                     return [
                       "${index + 1}",
                       item.namaSurat,
-                      item.nilai.toString(),
+                      nilai,
                     ];
                   }),
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:frontend_hamalatulquran/pages/data_infaq/data_infaq.dart';
 import 'package:frontend_hamalatulquran/pages/data_pengajar/data_pengajar_page.dart';
 import 'package:frontend_hamalatulquran/pages/data_santri/data_kelas_page.dart';
 import 'package:frontend_hamalatulquran/pages/evaluasi_murojaah/evaluasi_list_santri.dart';
@@ -91,14 +92,14 @@ class LainnyaPage extends StatelessWidget {
     debugPrint("🚀 Navigating to $label");
 
     final routes = <String, WidgetBuilder>{
-      "Lainnya...": (context) => LainnyaPage(),
       "Target Hafalan": (context) => const TargetHafalanPage(),
       "Data Santri": (context) => const DataKelasPage(),
       "Data Pengajar": (context) => const DataPengajarPage(),
-      "Management Hafalan": (context) =>  const ListKelasPage(),
-      "Rekap Absensi": (context) => const RekapAbsensi(),
-      "Laporan": (context) => const LaporanPageKelas(),
       "Evaluasi Muroja'ah": (context) => const EvaluasiListSantri(),
+      "Data Infaq": (context) => const DataInfaq(),
+      "Rekap Absensi": (context) => const RekapAbsensi(),
+      "Management Hafalan": (context) =>  const ListKelasPage(),
+      "Laporan": (context) => const LaporanPageKelas(),
     };
 
     if (routes.containsKey(label)) {

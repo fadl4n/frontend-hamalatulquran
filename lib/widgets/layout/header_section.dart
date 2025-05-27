@@ -7,6 +7,7 @@ class HeaderSection extends StatelessWidget {
   final String? nisn;
   final int? jumlahSantri;
   final String? kelasSantri;
+  final String? totalInfaq;
 
   const HeaderSection({
     Key? key,
@@ -14,6 +15,7 @@ class HeaderSection extends StatelessWidget {
     this.nisn,
     this.jumlahSantri,
     this.kelasSantri,
+    this.totalInfaq,
   }) : super(key: key);
 
   @override
@@ -54,6 +56,14 @@ class HeaderSection extends StatelessWidget {
             ),
             Text(
               "Kelas: $kelasSantri",
+              style: GoogleFonts.poppins(
+                fontSize: 14.sp,
+                color: Colors.white,
+              ),
+            ),
+            if (totalInfaq != null)
+            Text(
+              "Total Infaq: Rp. $totalInfaq",
               style: GoogleFonts.poppins(
                 fontSize: 14.sp,
                 color: Colors.white,

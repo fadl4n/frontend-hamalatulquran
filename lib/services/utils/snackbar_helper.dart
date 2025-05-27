@@ -43,4 +43,24 @@ class SnackbarHelper {
       ),
     );
   }
+  static void showInfo(BuildContext context, String message) {
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.info_rounded, color: Colors.white),
+            SizedBox(width: 8.w),
+            Expanded(child: Text(message)),
+          ],
+        ),
+        backgroundColor: Colors.lightBlue,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        margin: const EdgeInsets.all(16),
+      ),
+    );
+  }
 }
