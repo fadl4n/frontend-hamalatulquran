@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:frontend_hamalatulquran/models/user_model.dart';
 import 'package:frontend_hamalatulquran/services/env.dart';
@@ -11,6 +12,9 @@ class AuthService {
   Future<Map<String, dynamic>> _fetchPost(Uri url,
       {Map<String, String>? headers, Map<String, dynamic>? body}) async {
     try {
+      print("📤 Mengirim POST ke: $url");
+      print("📦 Body: $body");
+
       final response = await http
           .post(
             url,
@@ -19,6 +23,7 @@ class AuthService {
           )
           .timeout(requestTimeout);
 
+      print("🚀 Response Code: ${response.statusCode}");
       print("🚀 Response API: ${response.body}");
 
       final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
@@ -28,6 +33,8 @@ class AuthService {
       } else {
         throw Exception(jsonResponse["message"] ?? "Terjadi kesalahan");
       }
+    } on TimeoutException {
+      throw Exception("Request timeout, coba lagi nanti.");
     } catch (e) {
       throw Exception("Terjadi kesalahan: $e");
     }
@@ -36,6 +43,8 @@ class AuthService {
   // 🔐 Login & Simpan User
   Future<String> loginAndSave(String identifier, String password) async {
     final url = Uri.parse("$baseUrl/login");
+
+    print("🌐 URL Login: $url");
 
     final response = await _fetchPost(url, body: {
       "identifier": identifier,

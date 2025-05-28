@@ -3,13 +3,13 @@ class Environment {
 
   static String get baseUrl {
     String url = isProduction
-        ? "https://your-production-api.com/api"
+        ? "http://157.245.55.236/hamalatulquran/public/api"
         : "http://127.0.0.1:8000/api";
 
     return _fixLocalhostURL(url);
   }
 
-  static const Duration requestTimeout = Duration(seconds: 5);
+  static const Duration requestTimeout = Duration(seconds: 10);
 
   static String _fixLocalhostURL(String url) {
     if (url.contains("127.0.0.1")) {

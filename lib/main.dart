@@ -8,12 +8,14 @@ import 'package:frontend_hamalatulquran/pages/profile_page.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'services/env.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
   SharedPreferences prefs = await SharedPreferences.getInstance();
   String? savedUserId = prefs.getString("user_id");
+  print("🌍 BASE URL: ${Environment.baseUrl}");
   print("📌 [DEBUG] User ID yang tersimpan di awal aplikasi: $savedUserId");
   runApp(
     ScreenUtilInit(
